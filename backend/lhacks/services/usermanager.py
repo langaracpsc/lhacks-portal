@@ -1,8 +1,7 @@
 import uuid
 import time
 
-from lhacks.schema.usermodel import UserModel
-from lhacks.models.user import User
+from lhacks.schema.user import User
 
 from sqlalchemy.orm import Session
 from sqlalchemy.engine import Engine
@@ -10,20 +9,18 @@ from sqlalchemy.engine import Engine
 class UserManager:
     def __init__(self, db: Session):
         self.DB = db 
-        return
 
     def CreateUser(self, email: str):
-        return User(str(uuid.uuid4()), email, time.time())
+        return User(ID=str(uuid.uuid4()), Email=email, CreatedAt=time.time())
     
-    def AddUser(self, user: User):
+    def AddUser(self, user: User) -> bool:
         try:
-            self.DB.add(UserModel(id=user.ID, email=user.Email, createdAt=user.CreatedAt))
+            self.DB.add(User(ID=user.ID, Email=user.Email, CreatedAt=user.CreatedAt))
+            self.DB.commit()
 
         except Exception as e:
             print("Failed to add the user:", e)
-
+ 
             raise 
 
         return True
-
-        

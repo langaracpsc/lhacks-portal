@@ -5,16 +5,15 @@ from flask import Flask, Response
 from lhacks.services.usermanager import UserManager
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
+ 
+app = Flask("lhacks-portal")
 
-class Controller: 
-    app = Flask("lhacks-portal")
+engine = create_engine(os.getenv("CONNECTION_STRING"), echo=True)
 
-    engine = create_engine(os.getenv("CONNECTION_STRING"), echo=True)
+db = Session(engine)
 
-    db = sessionmaker(bind=engine)
+userManager = UserManager(db)
 
-    userManager = UserManager(db)
-
-    @app.route("/")
-    def Get():
-        return "Hello World"
+@app.route("/register", ["POST"])
+def Register():
+    return Response(str(userManager.AddUser(userManager.CreateUser("foo@bar.com"))), 200)
