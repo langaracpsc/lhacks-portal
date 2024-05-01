@@ -1,19 +1,16 @@
 import json
 
+import lhacks.oauth as oauth  
+
 from os import environ as env
 from urllib.parse import quote_plus, urlencode
 from authlib.integrations.flask_client import OAuth
 from dotenv import find_dotenv, load_dotenv
 from lhacks.services.usermanager import UserManager
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
 from flask import Flask,redirect, render_template, session, url_for
-import lhacks.oauth as oauth  
+
 from lhacks.blueprints.auth import auth_bp
-
-engine = create_engine(env.get("CONNECTION_STRING"), echo=True)
-
-dbSession = Session(engine)
+from lhacks.blueprints.user import user_bp
 
 def create_app():
     app = Flask("lhacks-portal")
@@ -33,5 +30,6 @@ def create_app():
     )   
     
     app.register_blueprint(auth_bp, url_prefix="/auth") # auth routes beginning with /auth
+    app.register_blueprint(user_bp, url_prefix="/user") # auth routes beginning with /auth
 
     return app
