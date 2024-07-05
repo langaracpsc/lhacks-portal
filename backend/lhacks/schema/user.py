@@ -1,16 +1,23 @@
 from sqlalchemy import Column, String, Integer
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import declarative_base
 from lhacks.schema.base import Base
 
 class User(Base):
     __tablename__ = "users"
+    
     ID = Column(String(36), name="id", primary_key=True)
+    QRCode = Column(String(36), name="qr_code", unique=True)
     Email = Column(String(256), name="email", unique=True)
-    CreatedAt = Column(Integer, name="createdat")    
+    CreatedAt = Column(Integer, name="createdat")
+    FullName = Column(String(256), name="full_name")
+    PreferredName = Column(String(256), name="preferred_name")
+    DietaryRestriction = Column(String(256), name="dietary_restriction")
+    Allergies = Column(String(256), name="allergies", nullable=True)
 
     def __repr__(self):
-            return "<User(name='%s', email='%s', createdAt='%d')>" % (
-                self.ID,
-                self.Email,
-                self.CreatedAt
-            )
+        return (
+            f"<User(id='{self.ID}', email='{self.Email}', created_at='{self.CreatedAt}', "
+            f"qr_code='{self.QRCode}', full_name='{self.FullName}', "
+            f"preferred_name='{self.PreferredName}', dietary_restriction='{self.DietaryRestriction}', "
+            f"allergies='{self.Allergies}')>"
+        )
