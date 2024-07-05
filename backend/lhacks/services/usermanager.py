@@ -2,25 +2,46 @@ import uuid
 import time
 
 from lhacks.schema.user import User
-
 from sqlalchemy.orm import Session
-from sqlalchemy.engine import Engine
 
 class UserManager:
     def __init__(self, db: Session):
         self.DB = db 
 
-    def CreateUser(self, email: str):
-        return User(ID=str(uuid.uuid4()), Email=email, CreatedAt=time.time())
+    def CreateUser(self, id: str, email: str, full_name: str, preferred_name: str = None, dietary_restriction: str = None, allergies: str = None) -> User:
+        return User(
+            ID=id,
+            Email=email,
+            QRCode=str(uuid.uuid4()),
+            FullName=full_name,
+            PreferredName=preferred_name,
+            DietaryRestriction=dietary_restriction,
+            Allergies=allergies,
+            CreatedAt=int(time.time())
+        )
     
     def AddUser(self, user: User) -> bool:
         try:
-            self.DB.add(User(ID=user.ID, Email=user.Email, CreatedAt=user.CreatedAt))
+            self.DB.add(user)
             self.DB.commit()
-
         except Exception as e:
             print("Failed to add the user:", e)
- 
-            raise 
-
+            self.DB.rollback()
+            raise
         return True
+    
+    def GetUserInfo(self, user_id: str) -> dict:
+        user = self.DB.query(User).filter_by(ID=user_id).first()
+        if not user:
+            return {"error": "User not found"}
+        
+        return {
+            "ID": user.ID,
+            "Email": user.Email,
+            "QRCode": user.QRCode,
+            "FullName": user.FullName,
+            "PreferredName": user.PreferredName,
+            "DietaryRestriction": user.DietaryRestriction,
+            "Allergies": user.Allergies,
+            "CreatedAt": user.CreatedAt
+        }
