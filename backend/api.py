@@ -1,18 +1,17 @@
-import json
-
 import lhacks.oauth as oauth  
 
 from os import environ as env
-from urllib.parse import quote_plus, urlencode
 from authlib.integrations.flask_client import OAuth
-from dotenv import find_dotenv, load_dotenv
-from lhacks.services.usermanager import UserManager
-from flask import Flask,redirect, render_template, session, url_for
+from flask import Flask
 
 from lhacks.blueprints.auth import auth_bp
 from lhacks.blueprints.user import user_bp
 
+from lhacks.config import load_environment_variables
+
 def create_app():
+    load_environment_variables()
+    
     app = Flask("lhacks-portal")
 
     app.secret_key = env.get("APP_SECRET_KEY")
@@ -33,3 +32,9 @@ def create_app():
     app.register_blueprint(user_bp, url_prefix="/user") # auth routes beginning with /auth
 
     return app
+
+
+if __name__ == "__main__":
+    app = create_app()
+    
+    app.run(host="0.0.0.0", port=env.get("PORT", 3000))
