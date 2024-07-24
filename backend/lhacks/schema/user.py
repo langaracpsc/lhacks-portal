@@ -14,6 +14,18 @@ class User(Base):
     DietaryRestriction = Column(String(256), name="dietary_restriction")
     Allergies = Column(String(256), name="allergies", nullable=True)
 
+    def ToDict(self) -> dict:
+        return {
+            "ID": self.ID,
+            "Email": self.Email,
+            "QRCode": self.QRCode,
+            "FullName": self.FullName,
+            "PreferredName": self.PreferredName,
+            "DietaryRestriction": self.DietaryRestriction,
+            "Allergies": self.Allergies,
+            "CreatedAt": self.CreatedAt
+        }
+
     def __repr__(self):
         return (
             f"<User(id='{self.ID}', email='{self.Email}', created_at='{self.CreatedAt}', "

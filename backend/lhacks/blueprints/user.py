@@ -14,7 +14,6 @@ user_bp = Blueprint("user", __name__)
 
 Manager = UserManager(dbSession)
 
-
 @user_bp.route("/", methods=["GET"])
 @require_auth(None)
 def get_user_info():

@@ -35,13 +35,4 @@ class UserManager:
         if not user:
             return {"error": "User not found"}
         
-        return {
-            "ID": user.ID,
-            "Email": user.Email,
-            "QRCode": user.QRCode,
-            "FullName": user.FullName,
-            "PreferredName": user.PreferredName,
-            "DietaryRestriction": user.DietaryRestriction,
-            "Allergies": user.Allergies,
-            "CreatedAt": user.CreatedAt
-        }
+        return user.ToDict()

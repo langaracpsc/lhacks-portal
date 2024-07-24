@@ -11,3 +11,4 @@ load_environment_variables()
 AUTH0_DOMAIN = os.getenv('AUTH0_DOMAIN')
 AUTH0_API_IDENTIFIER = os.getenv('AUTH0_API_IDENTIFIER')
 ALGORITHMS = ["RS256"]
+CONNECTION_STRING = os.getenv("CONNECTION_STRING")
