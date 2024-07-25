@@ -34,6 +34,7 @@ def get_token_auth_header():
 def get_rsa_key(kid):
     jsonurl = urlopen(f"https://{AUTH0_DOMAIN}/.well-known/jwks.json")
     jwks = json.loads(jsonurl.read())
+
     for key in jwks["keys"]:
         if key["kid"] == kid:
             return {

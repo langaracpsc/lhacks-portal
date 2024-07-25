@@ -19,7 +19,10 @@ class UserManager:
             Allergies=allergies,
             CreatedAt=int(time.time())
         )
-    
+
+    def GetUserByEmail(self, email: str) -> dict | None:
+        return self.DB.query(User).filter_by(Email=email).first()
+        
     def AddUser(self, user: User) -> bool:
         try:
             self.DB.add(user)
@@ -35,4 +38,4 @@ class UserManager:
         if not user:
             return {"error": "User not found"}
         
-        return user.ToDict()
+        return user
