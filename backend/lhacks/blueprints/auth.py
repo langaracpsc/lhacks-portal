@@ -7,17 +7,26 @@ from os import environ as env
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
 import lhacks.oauth as oauth
+from lhacks.db import dbSession
+
+from lhacks.services.usermanager import UserManager, User
+
 from urllib.parse import quote_plus, urlencode
 from flask import Blueprint, url_for, render_template, redirect, session
 
+
 auth_bp = Blueprint("auth", __name__)
+
+userManager = UserManager(dbSession)
 
 @auth_bp.route("/callback", methods=["GET", "POST"])
 def callback():
-    token = oauth.oauth.auth0.authorize_access_token()
+    tokenInfo = oauth.oauth.auth0.authorize_access_token()
 
-    session["user"] = token
+    userInfo: dict = tokenInfo["userinfo"]
 
+    if (userManager.GetUserByEmail(userInfo["email"]) == None):
+        print(json.dumps(tokenInfo, indent=2))
     return redirect("/")
 
 @auth_bp.route("/login")

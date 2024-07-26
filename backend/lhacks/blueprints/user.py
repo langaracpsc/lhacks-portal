@@ -39,12 +39,13 @@ def get_user_info():
 def create_user():
     token = get_token_auth_header()
     if isinstance(token, dict):
-        return token  # Token is already an error responsea
+        if ("error" in token.keys()):
+            return token  # Token is already an error responsea
 
     payload = verify_jwt(token)
+
     if isinstance(payload, dict) and 'error' in payload:
         return payload  # Payload is an error response
-    
     
     user_id = payload.get('sub')
 
@@ -66,8 +67,11 @@ def create_user():
             dietary_restriction=data["dietary_restriction"],
             allergies=data["allergies"]
         )
+
         Manager.AddUser(user)
+
         return jsonify({"message": "User added successfully"}), 201
+    
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
