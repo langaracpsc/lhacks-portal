@@ -1,0 +1,1 @@
+// page for qrCode scan by executives
