@@ -27,12 +27,20 @@ def callback():
 
     userInfo: dict = tokenInfo["userinfo"]
 
-    if (userManager.GetUserByEmail(userInfo["email"]) == None):
-        print(json.dumps(tokenInfo, indent=2))
+    user: User | None = userManager.GetUserByEmail(userInfo["email"])
+
+    if (user == None):
+        user = userManager.AddUser(userManager.CreateUser(
+            userInfo["email"],
+            userInfo["name"]
+        ))
 
     sessionToken: str = str(uuid.uuid4())
     
-    authManager.JwtLookup[sessionToken] = tokenInfo["access_token"]
+    authManager.JwtLookup[sessionToken] = {
+        "token": tokenInfo["access_token"],
+        "user": user.ToDict() 
+    }
 
     return redirect(f"/?uuid={sessionToken}")
 
