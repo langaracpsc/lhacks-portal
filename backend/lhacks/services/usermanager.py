@@ -5,12 +5,18 @@ import os
 
 import lhacks.util.crypto as crypto
 
+from lhacks.schema.application import Application
+from lhacks.services.applicationmanager import ApplicationManager
+
 from lhacks.schema.user import User
+
 from sqlalchemy.orm import Session
+from sqlalchemy import update
 
 class UserManager:
     def __init__(self, db: Session):
-        self.DB = db 
+        self.DB = db
+        self.ApplicationManager = ApplicationManager(db)
 
     def CreateUser(self, email: str, full_name: str, preferred_name: str = None, dietary_restriction: str = None, allergies: str = None) -> User:
         id: str = crypto.GetSha256Hash(email)
@@ -26,7 +32,7 @@ class UserManager:
             CreatedAt=int(time.time())
         )
 
-    def GetUserByEmail(self, email: str) -> dict | None:
+    def GetUserByEmail(self, email: str) -> User | None:
         return self.DB.query(User).filter_by(Email=email).first()
         
     def AddUser(self, user: User) -> User | None:
@@ -45,3 +51,26 @@ class UserManager:
             return {"error": "User not found"}
         
         return user
+    
+    def SyncUserWithApplication(self, email: str) -> User:
+        application: Application = self.ApplicationManager.GetApplicationByEmail(email)
+
+        if (not application):
+            return {"error": "Application not found"}
+
+        user: User = None 
+
+        try:
+            update(User).where(User.Email == email).values(
+                PreferredName=application.PreferredName, 
+                DietaryRestriction=application.DietaryRestriction, 
+                Allergies=application.Allergies
+            )
+
+            user = self.GetUserByEmail(email).ToDict()
+
+        except Exception as e: 
+            return {"error": e.args[1]}
+        
+        return user
+

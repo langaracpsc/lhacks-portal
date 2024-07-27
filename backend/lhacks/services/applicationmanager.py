@@ -8,8 +8,15 @@ class ApplicationManager:
     def __init__(self, db: Session):
         self.DB = db 
 
-    def AddApplication(application: Application) -> bool:
-        return False
-    
-    def GetApplicationByEmail(email: str) -> dict:
-        return {}
+    def AddApplication(self, application: Application) -> Application | None:
+        try:
+            self.DB.add(application)
+            self.DB.commit()
+
+        except:
+            return None
+        
+        return application 
+
+    def GetApplicationByEmail(self, email: str) -> Application:
+        return self.DB.query(Application).where(email=email)
