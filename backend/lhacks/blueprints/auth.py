@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import uuid
 
 from os import environ as env
 
@@ -10,14 +11,15 @@ import lhacks.oauth as oauth
 from lhacks.db import dbSession
 
 from lhacks.services.usermanager import UserManager, User
+from lhacks.services.auth import AuthManager
 
 from urllib.parse import quote_plus, urlencode
 from flask import Blueprint, url_for, render_template, redirect, session
 
-
 auth_bp = Blueprint("auth", __name__)
 
 userManager = UserManager(dbSession)
+authManager = AuthManager()
 
 @auth_bp.route("/callback", methods=["GET", "POST"])
 def callback():
@@ -27,8 +29,25 @@ def callback():
 
     if (userManager.GetUserByEmail(userInfo["email"]) == None):
         print(json.dumps(tokenInfo, indent=2))
-    return redirect("/")
 
+    sessionToken: str = str(uuid.uuid4())
+    
+    authManager.JwtLookup[sessionToken] = tokenInfo["access_token"]
+
+    return redirect(f"/?uuid={sessionToken}")
+
+@auth_bp.route("/token/<string:uuid>")
+def get_token(uuid: str):
+    if (not(uuid in authManager.JwtLookup.keys())):
+        return { "error": "Invalid UUID." }
+    
+    response = { "token": authManager.JwtLookup[uuid] }
+
+    authManager.JwtLookup.pop(uuid)
+
+    return response
+    
+    
 @auth_bp.route("/login")
 def login():
   print("uri: ", url_for("auth.callback", _external=True))

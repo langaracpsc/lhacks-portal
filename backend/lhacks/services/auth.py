@@ -89,3 +89,7 @@ class Auth0JWTBearerTokenValidator(JWTBearerTokenValidator):
 require_auth = ResourceProtector()
 validator = Auth0JWTBearerTokenValidator(AUTH0_DOMAIN, AUTH0_API_IDENTIFIER)
 require_auth.register_token_validator(validator)
+
+class AuthManager:
+    def __init__(self):
+        self.JwtLookup: dict[str, str] = {}
