@@ -49,7 +49,7 @@ def get_token(uuid: str):
     if (not(uuid in authManager.JwtLookup.keys())):
         return { "error": "Invalid UUID." }
     
-    response = { "token": authManager.JwtLookup[uuid] }
+    response = authManager.JwtLookup[uuid]
 
     authManager.JwtLookup.pop(uuid)
 

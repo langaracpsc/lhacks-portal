@@ -6,6 +6,7 @@ from flask import Flask
 
 from lhacks.blueprints.auth import auth_bp
 from lhacks.blueprints.user import user_bp
+from lhacks.blueprints.scan import scan_bp
 
 from lhacks.config import load_environment_variables
 
@@ -30,6 +31,7 @@ def create_app():
     
     app.register_blueprint(auth_bp, url_prefix="/auth") # auth routes beginning with /auth
     app.register_blueprint(user_bp, url_prefix="/user") # auth routes beginning with /auth
+    app.register_blueprint(scan_bp, url_prefix="/scan") # auth routes beginning with /auth
 
     return app
 

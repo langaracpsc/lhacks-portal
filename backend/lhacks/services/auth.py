@@ -61,6 +61,7 @@ def verify_jwt(token):
             audience=AUTH0_API_IDENTIFIER,
             issuer=f"https://{AUTH0_DOMAIN}/"
         )
+
         return payload
     except jwt.ExpiredSignatureError:
         return auth_error("Token is expired", 401)
