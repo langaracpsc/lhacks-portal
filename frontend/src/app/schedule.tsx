@@ -1,3 +1,4 @@
+"use client"
 import React, { useState, useEffect } from 'react';
 
 interface Event {
@@ -31,14 +32,14 @@ export default function Schedule({ events }: ScheduleProps) {
   };
 
   return (
-    <div className="flex flex-col text-white rounded-lg gap-5">
+    <div className="flex flex-col justify-center items-center w-screen h-screen text-white rounded-lg gap-5">
       <div className="flex flex-col text-center gap-3">
         <p className="text-4xl font-bold text-orange-500">Hackathon Timer</p>
         <p className="text-6xl font-bold">{formatTime(time)}</p>
       </div>
-      <div className="max-h-[60vh] overflow-y-auto">
+      <div id="croll" className="max-h-[60vh] w-11/12 p-5  scrollbar-thumb-orange-700 overflow-y-auto">
         {events.map((event, index) => (
-          <div key={index} className={`p-4 rounded-lg mb-2 ${index === 1 ? 'bg-orange-950' : 'bg-zinc-800'}`}>
+          <div key={index} className={`p-4  rounded-lg mb-2 ${index === 1 ? 'bg-orange-950' : 'bg-zinc-800'}`}>
             <div className="flex flex-row justify-between items-center">
               <p>{event.title}</p>
             </div>

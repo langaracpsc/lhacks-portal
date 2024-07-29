@@ -1,6 +1,7 @@
 import { useQRCode } from 'next-qrcode';
 import React from 'react';
 
+
 interface FoodProps {
   mealToken: number;
   tokenType: string;
@@ -10,7 +11,8 @@ interface FoodProps {
 export default function Food({ QRCode, mealToken, tokenType }: FoodProps) {
   const { Canvas } = useQRCode();
   return (
-    <div className="flex flex-col items-center rounded-lg gap-5">
+    <div className="flex flex-col items-center justify-center rounded-lg gap-10 ">
+        
         <Canvas
             text={QRCode}
             options={{
@@ -21,8 +23,8 @@ export default function Food({ QRCode, mealToken, tokenType }: FoodProps) {
               
           }}
         />
-        <div className='flex flex-col gap-4 max-w-[90%]'>
-            <p className="text-3xl font-bold ">Your available {tokenType} meals:</p>
+        <div className='flex flex-col gap-4 max-w-[90%] justify-baseline items-center'>
+            <p className="text-3xl font-bold text-white ">Your available {tokenType} meals:</p>
             <p className="text-5xl font-bold text-orange-500">0{mealToken}</p>
         </div>
 

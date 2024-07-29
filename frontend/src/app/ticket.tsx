@@ -12,7 +12,7 @@ interface TicketProps {
 export default function Ticket({ QRCode, Name, FName, Status, CheckInTime }: TicketProps) {
   const { Canvas } = useQRCode();
   return (
-    <div className="flex flex-col justify-center items-center rounded-lg gap-8 max-w-[90%]">
+    <div className="flex flex-col justify-center items-center rounded-lg gap-8 w-screen">
         <Canvas
           text={QRCode}
           options={{
@@ -23,11 +23,11 @@ export default function Ticket({ QRCode, Name, FName, Status, CheckInTime }: Tic
 
           }}
         />
-        <div className='flex flex-col gap-5 '>
-          <p className="text-3xl font-bold ">{Name}</p>
-          <p className="text-3xl font-bold ">{FName}</p>
-          <p className="text-3xl font-bold ">Status: <span className='text-orange-500'>{Status ? "Checked in" : "Not Checked in"}</span></p>
-          <p className="text-3xl font-bold ">Check in date: <span className='text-orange-500'>{CheckInTime} </span></p>
+        <div className='flex flex-col gap-5 justify-center items-start '>
+          <p className="text-3xl font-bold text-orange-500 ">{Name}</p>
+          <p className="text-3xl font-bold  text-orange-500">{FName}</p>
+          <p className="text-3xl font-bold text-white">Status: <span className='text-orange-500'>{Status ? "Checked in" : "Not Checked in"}</span></p>
+          <p className="text-3xl font-bold text-white">Check in date: <span className='text-orange-500'>{CheckInTime} </span></p>
         </div>
     </div>
   );
