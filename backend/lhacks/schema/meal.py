@@ -3,6 +3,12 @@ from sqlalchemy import Column, String, Integer, Boolean
 
 from enum import Enum
 
+class MealType(Enum):
+    Breakfast = 0
+    Lunch = 1
+    Dinner = 2
+    Snacks = 3
+
 class Meal(Base):
     __tablename__ = "meals"
 
@@ -35,7 +41,7 @@ class MealToken(Base):
     ID = Column(String(36), name="id", primary_key=True, nullable=False)
     UserID = Column(String(36), name="user_id", nullable=False)  # New field
     MealID = Column(String(36), name="meal_id", nullable=False)
-    Used = Column(Boolean(), name="used", nullable=False)
+    Used = Column(Boolean(), name="used", nullable=False, default=False)
     UpdatedAt = Column(Integer(), name="updated_at", nullable=False)
     CreatedAt = Column(Integer(), name="created_at", nullable=False)
 
