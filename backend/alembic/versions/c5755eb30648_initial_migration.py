@@ -35,7 +35,7 @@ def upgrade():
         sa.Column('name', sa.String(64), nullable=False),
         sa.Column('created_at', sa.Integer(), nullable=False),
         sa.Column('updated_at', sa.Integer(), nullable=False),
-        sa.Column('active', sa.Boolean(), nullable=False),
+        sa.Column('active', sa.Boolean(), nullable=False, server_default=sa.text('false')),
         sa.Column('type', sa.Integer(), nullable=False),
         sa.PrimaryKeyConstraint('id'),
         sa.UniqueConstraint('name')
@@ -101,53 +101,17 @@ def upgrade():
     )
 
     current_time = int(time.time())
+
     op.bulk_insert(meals_table, [
-        {'id': str(uuid.uuid4()), 'name': 'Breakfast', 'created_at': current_time, 'updated_at': current_time, 'active': True, 'type': 0},
-        {'id': str(uuid.uuid4()), 'name': 'Lunch', 'created_at': current_time, 'updated_at': current_time, 'active': True, 'type': 1},
-        {'id': str(uuid.uuid4()), 'name': 'Dinner', 'created_at': current_time, 'updated_at': current_time, 'active': True, 'type': 2},
-        {'id': str(uuid.uuid4()), 'name': 'Snacks', 'created_at': current_time, 'updated_at': current_time, 'active': True, 'type': 3},
+        {'id': str(uuid.uuid4()), 'name': 'Breakfast', 'created_at': current_time, 'updated_at': current_time, 'active': False, 'type': 0},
+        {'id': str(uuid.uuid4()), 'name': 'Lunch', 'created_at': current_time, 'updated_at': current_time, 'active': False, 'type': 1},
+        {'id': str(uuid.uuid4()), 'name': 'Dinner', 'created_at': current_time, 'updated_at': current_time, 'active': False, 'type': 2},
+        {'id': str(uuid.uuid4()), 'name': 'Snacks', 'created_at': current_time, 'updated_at': current_time, 'active': False, 'type': 3},
+        {'id': str(uuid.uuid4()), 'name': 'Breakfast1', 'created_at': current_time, 'updated_at': current_time, 'active': False, 'type': 0},
+        {'id': str(uuid.uuid4()), 'name': 'Lunch1', 'created_at': current_time, 'updated_at': current_time, 'active': False, 'type': 1},
+        {'id': str(uuid.uuid4()), 'name': 'Dinner1', 'created_at': current_time, 'updated_at': current_time, 'active': False, 'type': 2},
+        {'id': str(uuid.uuid4()), 'name': 'Snacks1', 'created_at': current_time, 'updated_at': current_time, 'active': False, 'type': 3},
     ])
-
-    # Create tokens for each user
-    connection = op.get_bind()
-    
-    # Define table objects
-    users_table = table('users', column('id', sa.String))
-    meals_table = table('meals', column('id', sa.String))
-    meal_tokens_table = table('meal_tokens',
-        column('id', sa.String),
-        column('user_id', sa.String),
-        column('meal_id', sa.String),
-        column('used', sa.Boolean),
-        column('updated_at', sa.Integer),
-        column('created_at', sa.Integer)
-    )
-
-    # Fetch all user IDs
-    user_ids = connection.execute(select(users_table.c.id)).fetchall()
-
-    # Fetch all meal IDs
-    meal_ids = connection.execute(select(meals_table.c.id)).fetchall()
-
-    # Prepare data for bulk insert
-    token_data = []
-    current_time = int(time.time())
-    
-    for (user_id,) in user_ids:
-        for (meal_id,) in meal_ids:
-            for x in range(2):
-                token_data.append({
-                    'id': str(uuid.uuid4()),
-                    'user_id': user_id,
-                    'meal_id': meal_id,
-                    'used': False,
-                    'updated_at': current_time,
-                    'created_at': current_time
-                })
-
-    # Bulk insert tokens
-    op.bulk_insert(meal_tokens_table, token_data)
-
 
 def downgrade():
     op.drop_table('applications')

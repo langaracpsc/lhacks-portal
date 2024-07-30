@@ -31,7 +31,7 @@ class Meal(Base):
 
     def __repr__(self):
         return (
-            f"<Meal(id='{self.ID}', name='{self.UserID}', "
+            f"<Meal(id='{self.ID}', name='{self.Name}', "
             f"created_at='{self.CreatedAt}', updated_at='{self.UpdatedAt}', active='{self.Active}', type='{self.Type}')>"
         )
     

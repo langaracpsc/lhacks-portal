@@ -1,7 +1,7 @@
 import uuid
 import time
 
-from lhacks.schema.meal import Meal, MealType 
+from lhacks.schema.meal import Meal, MealType, MealToken 
 from sqlalchemy.orm import Session
 
 class MealManager:
@@ -9,6 +9,38 @@ class MealManager:
         self.DB = db 
 
     def AddMeal(self, meal: Meal) -> Meal:
+        self.DB.add(meal)
+        self.DB.commit()
+
+        return meal
+    
+    def ActivateMeal(self, meal: str) -> dict:
+        if (self.GetActiveMeal() != None):
+            return {"error": "Another meal is already active"}
+
+        meal: Meal = self.DB.query(Meal).filter_by(Name=meal).first()
+
+        if (meal == None):
+            return {"error": "Meal doesnt exist"}
+
+        meal.Active = True
+        self.DB.commit()
+
+        return meal.ToDict()
+
+    def GetMeals(self) -> list[dict]:
+        print([meal.ToDict() for meal in self.DB.query(Meal).all()])
+        return [meal.ToDict() for meal in self.DB.query(Meal).all()]
+
+    def GetActiveMeal(self) -> dict:
+        meal = self.DB.query(Meal).filter_by(Active=True).first()
+        return meal if meal == None else meal.ToDict()
+        
+    def CreateMealToken(self, userId: str, mealID: str, type: MealType) -> MealToken:
+        currentTime: int = time.time()
+        return MealToken(ID=str(uuid.uuid4()), UserID=userId, MealID=mealID, Used=False, UpdatedAt=currentTime, CreatedAt=currentTime)
+        
+    def AddMealToken(self, meal: MealToken) -> MealToken:
         self.DB.add(meal)
         self.DB.commit()
 

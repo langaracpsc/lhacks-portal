@@ -7,6 +7,7 @@ from flask import Blueprint, jsonify, request
 from lhacks.db import dbSession
 from lhacks.services.auth import get_token_auth_header, require_auth, verify_jwt
 from lhacks.services.scanmanager import ScanManager
+from lhacks.services.mealmanager import MealManager
 from lhacks.schema.scan import Scan, ScanType
 
 scan_bp = Blueprint("scan", __name__)
@@ -14,6 +15,7 @@ scan_bp = Blueprint("scan", __name__)
 Manager = ScanManager(dbSession)
 
 userManager = UserManager(dbSession)
+mealManager = MealManager(dbSession)
 
 @scan_bp.route("/create", methods=["POST"])
 # @require_auth(None)
@@ -47,8 +49,10 @@ def create_scan():
         scan = Manager.AddScan(Manager.CreateScan(data["userid"], int(data["type"])))
 
         if (scan.Type == ScanType.Meal):
-            print("Meal scan created: ", scan.ID)
-            
+           meal = mealManager.GetActiveMeal()
+
+           mealManager.AddMealToken(mealManager.CreateMealToken(data["userid"], data["meal"]))
+
         return jsonify({"message": "Scan created successfully", "scan": scan.ToDict() }), 201
     
     except Exception as e:
