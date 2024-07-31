@@ -34,7 +34,10 @@ class UserManager:
 
     def GetUserByEmail(self, email: str) -> User | None:
         return self.DB.query(User).filter_by(Email=email).first()
-        
+
+    def GetUsers(self) -> list[dict]:
+        return [user.ToDict() for user in self.DB.query(User).all()]
+
     def AddUser(self, user: User) -> User | None:
         try:
             self.DB.add(user)

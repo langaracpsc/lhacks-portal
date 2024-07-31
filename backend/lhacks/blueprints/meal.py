@@ -11,6 +11,8 @@ from lhacks.services.mealmanager import Meal, MealManager
 
 meal_bp = Blueprint("meal", __name__)
 
+userManager = UserManager(dbSession)
+
 Manager = MealManager(dbSession)
 
 @meal_bp.route("/", methods=["GET"])
@@ -25,6 +27,37 @@ def get_meals():
     #     return payload  # Payload is an error response
     return Manager.GetMeals(), 200
 
+
+@meal_bp.route("/tokens/issue", methods=["POST"])
+# @require_auth(None)
+def issue_tokens():
+    # token = get_token_auth_header()
+    # if isinstance(token, dict):
+    #     return token  # Token is already an error response
+
+    # payload = verify_jwt(token)
+    # if isinstance(payload, dict) and 'error' in payload:
+    #     return payload  # Payload is an error response
+
+    users = userManager.GetUsers()
+
+    tokensCreated: int = 0
+
+    meals: list[dict] = Manager.GetMeals()
+
+    print("Meal count: ", len(meals))
+
+    for user in users:
+        for meal in meals:
+            for _ in range(2):
+                Manager.AddMealToken(Manager.
+            CreateMealToken(user["ID"], meal["id"]))
+            tokensCreated += 1
+
+        return {"success": True, "tokens_created": tokensCreated}, 201
+
+
+    return Manager.GetMeals(), 200
 @meal_bp.route("/active", methods=["GET"])
 # @require_auth(None)
 def get_active_meal():

@@ -63,8 +63,8 @@ def upgrade():
 
     # Create users table
     op.create_table('users',
-        sa.Column('id', sa.String(36), nullable=False),
-        sa.Column('qr_code', sa.String(36), nullable=True),
+        sa.Column('id', sa.String(65), nullable=False),
+        sa.Column('qr_code', sa.String(65), nullable=True),
         sa.Column('email', sa.String(256), nullable=True),
         sa.Column('createdat', sa.Integer(), nullable=True),
         sa.Column('full_name', sa.String(256), nullable=True),
