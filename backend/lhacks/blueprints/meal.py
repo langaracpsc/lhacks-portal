@@ -14,7 +14,6 @@ meal_bp = Blueprint("meal", __name__)
 userManager = UserManager(dbSession)
 
 Manager = MealManager(dbSession)
-
 @meal_bp.route("/", methods=["GET"])
 # @require_auth(None)
 def get_meals():
@@ -44,9 +43,7 @@ def issue_tokens():
     tokensCreated: int = 0
 
     meals: list[dict] = Manager.GetMeals()
-
-    print("Meal count: ", len(meals))
-
+    
     for user in users:
         for meal in meals:
             for _ in range(2):
@@ -54,10 +51,9 @@ def issue_tokens():
             CreateMealToken(user["ID"], meal["id"]))
             tokensCreated += 1
 
-        return {"success": True, "tokens_created": tokensCreated}, 201
+    return {"success": True, "tokens_created": tokensCreated}, 201
 
 
-    return Manager.GetMeals(), 200
 @meal_bp.route("/active", methods=["GET"])
 # @require_auth(None)
 def get_active_meal():
@@ -73,6 +69,16 @@ def get_active_meal():
 
     return meal.ToDict(), 200
 
+
+@meal_bp.route("/deactivate/<string:meal>", methods=["POST"])
+# @require_auth(None)
+def deactivate_meal(meal: str):
+    meal: dict = Manager.DeactivateMeal(meal)
+
+    if ("error" in meal.keys()):
+        return meal, 500
+
+    return meal, 200
 
 @meal_bp.route("/activate/<string:meal>", methods=["POST"])
 # @require_auth(None)

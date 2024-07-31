@@ -29,9 +29,6 @@ class MealManager:
         return meal.ToDict()
 
     def DeactivateMeal(self, meal: str) -> dict:
-        if (self.GetActiveMeal() != None):
-            return {"error": "Another meal is already active"}
-
         meal: Meal = self.DB.query(Meal).filter_by(Name=meal).first()
 
         if (meal == None):
