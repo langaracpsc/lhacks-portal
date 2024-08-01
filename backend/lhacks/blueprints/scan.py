@@ -48,12 +48,21 @@ def create_scan():
     try:
         scan = Manager.AddScan(Manager.CreateScan(data["userid"], int(data["type"])))
 
-        if (scan.Type == ScanType.Meal):
+        if (scan.Type == ScanType.Meal.value):
            meal = mealManager.GetActiveMeal()
 
-           mealManager.AddMealToken(mealManager.CreateMealToken(data["userid"], data["meal"]))
+           if (meal == None):
+               return {"error": "No active meal."}, 500  
 
-        return jsonify({"message": "Scan created successfully", "scan": scan.ToDict() }), 201
+           if ("meal" not in data):
+               return {"error": "Meal name not provided for the scan."}, 500
+
+           token = mealManager.SpendToken(data["userid"], meal["name"])
+           
+           if ("error" in token):
+               return token, 500
+
+        return {"success": True, "message": "Scan created successfully", "scan": scan.ToDict() }, 201
     
     except Exception as e:
         print(e)

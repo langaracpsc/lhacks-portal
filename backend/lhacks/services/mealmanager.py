@@ -62,12 +62,14 @@ class MealManager:
         if (meal == None):
             return { "error": f"Meal {meal} not found." }
 
-        token: MealToken | None = self.DB.query(MealToken).filter_by(UserID=userID, MealID=meal.ID)
+        token: MealToken | None = self.DB.query(MealToken).filter_by(UserID=userID, MealID=meal.ID, Used=False).first()
 
         if (token == None):
             return { "error": "Not enough tokens." }
 
         token.Used = True
+
+        self.DB.commit()
 
         return token.ToDict() 
 
