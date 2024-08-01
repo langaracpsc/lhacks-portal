@@ -9,10 +9,13 @@ from flask import Blueprint, jsonify, request
 from lhacks.db import dbSession
 from lhacks.services.auth import get_token_auth_header, require_auth, verify_jwt
 from lhacks.services.usermanager import UserManager
+from lhacks.services.scanmanager import ScanManager
 
 user_bp = Blueprint("user", __name__)
 
 Manager = UserManager(dbSession)
+
+scanManager = ScanManager(dbSession)
 
 @user_bp.route("/", methods=["GET"])
 @require_auth(None)
@@ -88,3 +91,15 @@ def test():
         return payload  # Payload is an error response
     
     return jsonify(payload)
+
+
+@user_bp.route("/checkedin/<string:email>", methods=["GET"])
+def is_user_checked_in(email: str):
+    user = Manager.GetUserByEmail(email)
+
+    if (user == None):
+        return { "error": "User doesn't exist." }
+
+    scans = scanManager.GetScans(user.ID, 0)
+    
+    return {"checked_in": len(scans) > 0}, 200
