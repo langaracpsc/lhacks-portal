@@ -55,19 +55,20 @@ def issue_tokens():
 
 
 @meal_bp.route("/active", methods=["GET"])
-# @require_auth(None)
+@require_auth(None)
 def get_active_meal():
-    # token = get_token_auth_header()
-    # if isinstance(token, dict):
-    #     return token  # Token is already an error response
+    token = get_token_auth_header()
+    if isinstance(token, dict):
+        return token  # Token is already an error response
 
-    # payload = verify_jwt(token)
-    # if isinstance(payload, dict) and 'error' in payload:
-    #     return payload  # Payload is an error response
+    payload = verify_jwt(token)
+
+    if isinstance(payload, dict) and 'error' in payload:
+        return payload  # Payload is an error response
     
-    meal: Meal = Manager.GetActiveMeal()
+    meal: dict = Manager.GetActiveMeal()
 
-    return meal.ToDict(), 200
+    return meal, 200
 
 
 @meal_bp.route("/deactivate/<string:meal>", methods=["POST"])
@@ -119,4 +120,18 @@ def activate_meal(meal: str):
         # )
 
         # Manager.AddUser(user)
+
+@meal_bp.route("/tokens/<string:email>", methods=["GET"])
+def GetMealTokens(email: str):
+    user = userManager.GetUserByEmail(email)
+
+    if (user == None):
+        return {"error": "User doesnt exist"}, 500
+
+    tokens = Manager.GetMealTokens(user.ID)
+
+    if (isinstance(tokens, dict) and "error" in tokens):
+        return tokens, 500
+    
+    return tokens, 200
 

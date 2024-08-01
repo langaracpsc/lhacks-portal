@@ -50,7 +50,11 @@ def get_rsa_key(kid):
 def verify_jwt(token):
     try:
         unverified_header = jwt.get_unverified_header(token)
+
+        print("unverified: ", unverified_header)
+     
         rsa_key = get_rsa_key(unverified_header['kid'])
+        
         if not rsa_key:
             return auth_error("Unable to find appropriate key", 401)
         
@@ -61,12 +65,15 @@ def verify_jwt(token):
             audience=AUTH0_API_IDENTIFIER,
             issuer=f"https://{AUTH0_DOMAIN}/"
         )
-
+        
         return payload
+
     except jwt.ExpiredSignatureError:
         return auth_error("Token is expired", 401)
+
     except jwt.JWTClaimsError:
         return auth_error("Incorrect claims, please check the audience and issuer", 401)
+
     except Exception:
         return auth_error("Unable to parse authentication token", 401)
 
@@ -74,6 +81,8 @@ class Auth0JWTBearerTokenValidator(JWTBearerTokenValidator):
     def __init__(self, domain, audience):
         issuer = f"https://{domain}/"
         jsonurl = urlopen(f"{issuer}.well-known/jwks.json")
+
+        print(f"{issuer}.well-known/jwks.json")
         public_key = JsonWebKey.import_key_set(
             json.loads(jsonurl.read())
         )

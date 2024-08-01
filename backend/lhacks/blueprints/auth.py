@@ -11,10 +11,12 @@ import lhacks.oauth as oauth
 from lhacks.db import dbSession
 
 from lhacks.services.usermanager import UserManager, User
-from lhacks.services.auth import AuthManager
+from lhacks.services.auth import AuthManager, verify_jwt
 
 from urllib.parse import quote_plus, urlencode
 from flask import Blueprint, url_for, render_template, redirect, session
+
+from jose import jwt
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -27,6 +29,8 @@ def callback():
 
     userInfo: dict = tokenInfo["userinfo"]
 
+    verfied = verify_jwt(tokenInfo["access_token"])
+    
     user: User | None = userManager.GetUserByEmail(userInfo["email"])
 
     if (user == None):

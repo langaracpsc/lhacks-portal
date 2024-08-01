@@ -49,14 +49,22 @@ class MealManager:
     def CreateMealToken(self, userId: str, mealID: str) -> MealToken:
         currentTime: int = time.time()
         return MealToken(ID=str(uuid.uuid4()), UserID=userId, MealID=mealID, Used=False, UpdatedAt=currentTime, CreatedAt=currentTime)
-        
+
+    def GetMealTokens(self, userId: str) -> dict:
+        meal = self.GetActiveMeal()
+
+        if (meal == None):
+            return { "error": "No active meal." }
+
+        return [token.ToDict() for token in self.DB.query(MealToken).filter_by(UserID=userId, MealID=meal["id"]).all()]
+
     def AddMealToken(self, token: MealToken) -> MealToken:
         self.DB.add(token)
         self.DB.commit()
 
         return token
     
-    def SpendToken(self, userID: str, mealName: str) -> dict:
+    def SpendToken(self, userID: str, mealName: str) -> dict | list[dict]:
         meal: Meal | None = self.DB.query(Meal).filter_by(Name=mealName).first()
 
         if (meal == None):
