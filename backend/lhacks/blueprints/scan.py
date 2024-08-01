@@ -46,22 +46,32 @@ def create_scan():
             return jsonify({"error": f"Missing required field: {field}"}), 400
     
     try:
-        scan = Manager.AddScan(Manager.CreateScan(data["userid"], int(data["type"])))
+        scan = Manager.CreateScan(data["userid"], int(data["type"]))
 
         if (scan.Type == ScanType.Meal.value):
-           meal = mealManager.GetActiveMeal()
+            meal = mealManager.GetActiveMeal()
 
-           if (meal == None):
+            if (meal == None):
                return {"error": "No active meal."}, 500  
 
-           if ("meal" not in data):
+            if ("meal" not in data):
                return {"error": "Meal name not provided for the scan."}, 500
-
-           token = mealManager.SpendToken(data["userid"], meal["name"])
+          
+            token = mealManager.SpendToken(data["userid"], meal["name"])
            
-           if ("error" in token):
+            if ("error" in token):
                return token, 500
 
+        elif (scan.Type == ScanType.CheckIn.value):
+            scans = Manager.GetScans(data["userid"], data["type"])
+
+            if (len(scans) < 1):
+                Manager.AddScan(Manager.CreateScan(data["userid"], int(data["type"])))
+            else:
+                return {"error": "User already checked in."}, 500
+        
+        Manager.AddScan(scan)
+        
         return {"success": True, "message": "Scan created successfully", "scan": scan.ToDict() }, 201
     
     except Exception as e:

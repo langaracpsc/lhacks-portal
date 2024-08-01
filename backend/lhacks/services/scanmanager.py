@@ -14,6 +14,11 @@ class ScanManager:
 
         return scan
 
+    def GetScans(self, userId: str, type: int) -> list[dict]:
+        scans = self.DB.query(Scan).filter_by(UserID=userId, Type=type).all()
+        
+        return [] if scans == None else scans
+
     def CreateScan(self, userID: str, type: ScanType) -> Scan:
         return Scan(ID=str(uuid.uuid4()), UserID=userID, Type=int(type), CreatedAt=time.time())
 

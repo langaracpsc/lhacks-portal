@@ -29,7 +29,7 @@ def callback():
 
     userInfo: dict = tokenInfo["userinfo"]
 
-    verfied = verify_jwt(tokenInfo["access_token"])
+    # verfied = verify_jwt(tokenInfo["access_token"])
     
     user: User | None = userManager.GetUserByEmail(userInfo["email"])
 
