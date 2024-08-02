@@ -1,5 +1,5 @@
 "use client";
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useQRCode } from 'next-qrcode';
 import Food from './food';
 import Schedule from './schedule';
@@ -10,8 +10,9 @@ import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const router = useRouter();
-
-  router.push(`http://127.0.0.1:5000/auth/login`);
+  useEffect( () => {
+    router.push(`http://100.73.91.105:5001/auth/login`);
+  }, [router]);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center  w-screen bg-black">

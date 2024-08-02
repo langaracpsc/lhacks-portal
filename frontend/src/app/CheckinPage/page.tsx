@@ -9,6 +9,10 @@ export default function CheckInPage() {
 
     const nameSplit = User.FullName?.split(' ');
     
+    console.log({
+        User, Token
+    })
+
     return (<>
         <div className=" flex flex-col w-screen h-screen  items-center">
             <div className="w-screen h-screen flex justify-end items-start">

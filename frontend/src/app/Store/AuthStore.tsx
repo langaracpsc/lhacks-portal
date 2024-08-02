@@ -1,7 +1,7 @@
+"use client"
 import { create } from 'zustand'
 
-export interface User 
-{
+export interface User {
     ID: string;
     QRCode: string;
     Email: string;
@@ -13,8 +13,7 @@ export interface User
     Role: number;
 }
 
-export interface CheckInInfo 
-{
+export interface CheckInInfo {
     CheckedIn: boolean,
     Time: number
 }
@@ -22,16 +21,26 @@ export interface CheckInInfo
 export const useAuthStore = create((set) => ({
     User: {
         Checkin: {
-        } as CheckInInfo 
+        } as CheckInInfo
     },
 
-    Token: null,    
+    Token: null,
 
-    SetToken: (token: string) => set({Token: token}),
-    SetUser: (user: User) => set({User: user}),
-    CheckIn: (user: User, checkinInfo: CheckInInfo) => set(({ User: {
-        ...user,
-        CheckinInfo: checkinInfo
-    }}))
+    SetToken: (token: string) => set({ Token: token }),
+    SetUser: (user: User) => set({ User: user }),
+    CheckIn: (user: User, checkinInfo: CheckInInfo) => set(({
+        User: {
+            ...user,
+            CheckinInfo: checkinInfo
+        }
+    }))
 }));
 
+if (typeof window !== "undefined") {
+    useAuthStore.subscribe((state) => {
+        window.localStorage.setItem("authStore", JSON.stringify(state))
+    })
+
+    const savedState = JSON.parse(window.localStorage.getItem("authStore") || '{}')
+    useAuthStore.setState(savedState);
+}

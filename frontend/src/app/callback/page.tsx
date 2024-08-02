@@ -1,11 +1,12 @@
 "use client"
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckInInfo, useAuthStore, User } from "../Store/AuthStore";
 
-export default function callback() {
+function CallbackComponent() {
+
     const searchParams = useSearchParams();
     const uuid: string | null = searchParams.get("uuid");
 
@@ -20,7 +21,7 @@ export default function callback() {
     useEffect(() => {
         (async () => {
             if (response === undefined)
-                setResponse((await (await fetch(`http://127.0.0.1:5000/auth/token/${uuid}`)).json()));
+                setResponse((await (await fetch(`http://100.73.91.105:5001/auth/token/${uuid}`)).json()));
         })();
     }, [uuid, response]);
 
@@ -30,7 +31,7 @@ export default function callback() {
         let checkinResponse: any;
 
         const fetchCheckinInfo = async (user: User) => {
-            checkinResponse = (await (await fetch(`http://127.0.0.1:5000/user/checkedin/${user.Email}`)).json()) as CheckInInfo;
+            checkinResponse = (await (await fetch(`http://100.73.91.105:5001/user/checkedin/${user.Email}`)).json()) as CheckInInfo;
         }; 
 
         if (response?.token && response?.user) {
@@ -50,4 +51,13 @@ export default function callback() {
     return <>
         Authorizing
     </>;
+}
+
+export default function Callback() 
+{
+    return (
+        <Suspense>
+            <CallbackComponent/>
+        </Suspense>
+    );    
 }
