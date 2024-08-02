@@ -78,7 +78,6 @@ def create_user():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
 @user_bp.route("/test")
 @require_auth(None)
 def test():
@@ -101,5 +100,8 @@ def is_user_checked_in(email: str):
         return { "error": "User doesn't exist." }
 
     scans = scanManager.GetScans(user.ID, 0)
-    
-    return {"checked_in": len(scans) > 0}, 200
+
+    if (len(scans) > 0):
+        return {"checked_in": True, "scan": scans[0]}, 200
+        
+    return {"checked_in": False }, 200

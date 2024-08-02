@@ -11,7 +11,7 @@ class Scan(Base):
     __tablename__ = "scans"
 
     ID = Column(String(36), name="id", primary_key=True, nullable=False)
-    UserID = Column(String(256), name="email",  nullable=False)
+    UserID = Column(String(256), name="user_id",  nullable=False)
     CreatedAt = Column(Integer(), name="createdat",  nullable=False)
     Type = Column(Integer(), name="type", nullable=False)
 

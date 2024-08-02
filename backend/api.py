@@ -3,6 +3,7 @@ import lhacks.oauth as oauth
 from os import environ as env
 from authlib.integrations.flask_client import OAuth
 from flask import Flask
+from flask_cors import CORS
 
 from lhacks.blueprints.auth import auth_bp
 from lhacks.blueprints.user import user_bp
@@ -15,6 +16,8 @@ def create_app():
     load_environment_variables()
     
     app = Flask("lhacks-portal")
+
+    CORS(app)
 
     app.secret_key = env.get("APP_SECRET_KEY")
 
@@ -42,3 +45,4 @@ if __name__ == "__main__":
     app = create_app()
     
     app.run(host="0.0.0.0", port=env.get("PORT", 3000))
+

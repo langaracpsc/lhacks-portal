@@ -77,5 +77,16 @@ def create_scan():
     except Exception as e:
         print(e)
         return jsonify({"error": str(e)}), 500
+    
+@scan_bp.route("/filter/<string:email>/<int:type>", methods=["GET"])
+def GetScans(email: str, type: int):
+    user = userManager.GetUserByEmail(email)
+
+    if (user == None):
+        return {"error": "User doesn't exist"}, 500 
+
+    scans = Manager.GetScansByUserID(user.ID, type)
+    
+    return { "scans": scans }
 
 

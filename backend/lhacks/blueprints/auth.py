@@ -46,7 +46,7 @@ def callback():
         "user": user.ToDict() 
     }
 
-    return redirect(f"/?uuid={sessionToken}")
+    return redirect(f"{os.getenv("CLIENT_URL")}/callback/?uuid={sessionToken}")
 
 @auth_bp.route("/token/<string:uuid>")
 def get_token(uuid: str):
