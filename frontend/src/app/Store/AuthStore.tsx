@@ -25,7 +25,7 @@ export const useAuthStore = create((set) => ({
     },
 
     Token: null,
-
+ 
     SetToken: (token: string) => set({ Token: token }),
     SetUser: (user: User) => set({ User: user }),
     CheckIn: (user: User, checkinInfo: CheckInInfo) => set(({

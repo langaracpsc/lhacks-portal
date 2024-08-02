@@ -13,12 +13,19 @@ from lhacks.schema.user import User
 from sqlalchemy.orm import Session
 from sqlalchemy import update
 
+from enum import Enum
+
+class Role(Enum):
+    Admin=0
+    Exec=1
+    User=2
+
 class UserManager:
     def __init__(self, db: Session):
         self.DB = db
         self.ApplicationManager = ApplicationManager(db)
 
-    def CreateUser(self, email: str, full_name: str, preferred_name: str = None, dietary_restriction: str = None, allergies: str = None) -> User:
+    def CreateUser(self, email: str, full_name: str, preferred_name: str = None, dietary_restriction: str = None, allergies: str = None, role: Role = Role.User) -> User:
         id: str = crypto.GetSha256Hash(email)
 
         return User(
@@ -29,7 +36,8 @@ class UserManager:
             PreferredName=preferred_name,
             DietaryRestriction=dietary_restriction,
             Allergies=allergies,
-            CreatedAt=int(time.time())
+            CreatedAt=int(time.time()),
+            Role=role
         )
 
     def GetUserByEmail(self, email: str) -> User | None:

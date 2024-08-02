@@ -1,7 +1,6 @@
 import { useQRCode } from 'next-qrcode';
 import React from 'react';
 
-
 interface FoodProps {
   mealToken: number;
   tokenType: string;
@@ -25,7 +24,7 @@ export default function Food({ QRCode, mealToken, tokenType }: FoodProps) {
         />
         <div className='flex flex-col gap-4 max-w-[90%] justify-baseline items-center'>
             <p className="text-3xl font-bold text-white ">Your available {tokenType} meals:</p>
-            <p className="text-5xl font-bold text-orange-500">0{mealToken}</p>
+            <p className="text-5xl font-bold text-orange-500">{mealToken}</p>
         </div>
 
     </div>
