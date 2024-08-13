@@ -4,9 +4,6 @@ import json
 import uuid
 
 from os import environ as env
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
-
 import lhacks.oauth as oauth
 from lhacks.db import dbSession
 
@@ -28,9 +25,14 @@ def callback():
     tokenInfo = oauth.oauth.auth0.authorize_access_token()
 
     userInfo: dict = tokenInfo["userinfo"]
-
-    # verfied = verify_jwt(tokenInfo["access_token"])
     
+    token: str = tokenInfo["access_token"]
+
+    verfied = verify_jwt(tokenInfo["access_token"])
+
+    if not verfied:
+        return {"error": "Invalid token"}, 401
+
     user: User | None = userManager.GetUserByEmail(userInfo["email"])
 
     if (user == None):
@@ -38,27 +40,19 @@ def callback():
             userInfo["email"],
             userInfo["name"]
         ))
-
-    sessionToken: str = str(uuid.uuid4())
     
-    authManager.JwtLookup[sessionToken] = {
-        "token": tokenInfo["access_token"],
-        "user": user.ToDict() 
-    }
+    session: dict = authManager.InsertToken(token, user.ToDict()) 
 
-    return redirect(f"{os.getenv("CLIENT_URL")}/Callback/?uuid={sessionToken}")
+    return redirect(f"{os.getenv("CLIENT_URL")}/Callback/?uuid={session["sessionID"]}")
 
 @auth_bp.route("/token/<string:uuid>")
 def get_token(uuid: str):
-    if (not(uuid in authManager.JwtLookup.keys())):
-        return { "error": "Invalid UUID." }
-    
-    response = authManager.JwtLookup[uuid]
+    response = authManager.Login(uuid)
 
-    authManager.JwtLookup.pop(uuid)
+    if "error" in response:
+        return response, 400 if response["type"] == 1 else 401 
 
-    return response
-    
+    return response, 200
     
 @auth_bp.route("/login")
 def login():
@@ -70,6 +64,7 @@ def login():
 @auth_bp.route("/logout")
 def logout():
     session.clear()
+    
     return redirect(
         "https://" + env.get("AUTH0_DOMAIN")
         + "/v2/logout?"

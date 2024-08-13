@@ -11,6 +11,7 @@ from lhacks.blueprints.scan import scan_bp
 from lhacks.blueprints.meal import meal_bp
 
 from lhacks.config import load_environment_variables
+from OpenSSL import SSL
 
 def create_app():
     load_environment_variables()
@@ -43,6 +44,11 @@ def create_app():
 
 if __name__ == "__main__":
     app = create_app()
+    context = SSL.Context(SSL.TLSv1_2_METHOD)
     
-    app.run(host="0.0.0.0", port=env.get("PORT", 3000))
+    # Path to your SSL certificate and private key
+    context.use_certificate_file('certificate.pem')
+    context.use_privatekey_file('private_key.pem')
+
+    app.run(host="0.0.0.0", port=env.get("PORT", 3000), ssl_context=context)
 
