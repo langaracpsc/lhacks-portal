@@ -42,7 +42,7 @@ class MealManager:
     def GetMeals(self) -> list[dict]:
         return [meal.ToDict() for meal in self.DB.query(Meal).all()]
 
-    def GetActiveMeal(self) -> dict:
+    def GetActiveMeal(self) -> dict | None:
         meal = self.DB.query(Meal).filter_by(Active=True).first()
         return meal if meal == None else meal.ToDict()
         

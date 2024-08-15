@@ -5,36 +5,37 @@ from lhacks.services.usermanager import UserManager
 
 from flask import Blueprint, jsonify, request
 from lhacks.db import dbSession
-from lhacks.services.auth import get_token_auth_header, require_auth, verify_jwt, ValidateJwtRequest
+
+from lhacks.decorators.validate_jwt import validate_jwt
+from lhacks.services.auth import get_token_auth_header, require_auth, verify_jwt
 from lhacks.services.usermanager import UserManager
 from lhacks.services.mealmanager import Meal, MealManager
 from lhacks.services.auth import authManager
+
 meal_bp = Blueprint("meal", __name__)
 
 userManager = UserManager(dbSession)
 
 Manager = MealManager(dbSession)
+
 @meal_bp.route("/", methods=["GET"])
 def get_meals():
-    # token = get_token_auth_header()
-    # if isinstance(token, dict):
-    #     return token  # Token is already an error response
+    token = get_token_auth_header()
+    
+    # payload = ValidateJwtRequest(token)
 
-    # payload = verify_jwt(token)
-    # if isinstance(payload, dict) and 'error' in payload:
-    #     return payload  # Payload is an error response
+    # if (isinstance(payload, dict) and ("error" in payload)):
+    #     return payload, 401
+
+
     return Manager.GetMeals(), 200
-
 
 @meal_bp.route("/tokens/issue", methods=["POST"])
 def issue_tokens():
     # token = get_token_auth_header()
-    # if isinstance(token, dict):
-    #     return token  # Token is already an error response
-
-    # payload = verify_jwt(token)
-    # if isinstance(payload, dict) and 'error' in payload:
-    #     return payload  # Payload is an error response
+    
+    # if (isinstance(payload, dict) and ("error" in payload)):
+    #     return payload, 401
 
     users = userManager.GetUsers()
 
@@ -52,75 +53,57 @@ def issue_tokens():
     return {"success": True, "tokens_created": tokensCreated}, 201
 
 @meal_bp.route("/active", methods=["GET"])
-def get_active_meal():
-    token = get_token_auth_header()
-    
-    payload = ValidateJwtRequest(token)
-
-    if (isinstance(payload, dict) and ("error" in payload)):
-        return payload, 401
-
+@validate_jwt()
+def get_active_meal(token):
     if (not authManager.LookUpToken(token)):
         return { "error": "Invalid access token." }, 401
 
-    meal: dict = Manager.GetActiveMeal() | None
+    meal: dict | None = Manager.GetActiveMeal()
 
     if (meal == None):
         return { "error": "No active meal" }, 500
 
     return meal, 200
 
-@meal_bp.route("/deactivate/<string:meal>", methods=["POST"])
-def deactivate_meal(meal: str):
-    meal: dict = Manager.DeactivateMeal(meal)
+def HandleLookup(token):
+    if (not authManager.LookUpToken(token)):
+        return { "error": "Invalid access token." }, 401
 
+@meal_bp.route("/deactivate/<string:meal>", methods=["POST"])
+@validate_jwt(HandleLookup)
+def deactivate_meal(meal: str, token):
+    meal: dict = Manager.DeactivateMeal(meal)
+    
     if ("error" in meal.keys()):
         return meal, 500
 
     return meal, 200
 
 @meal_bp.route("/activate/<string:meal>", methods=["POST"])
-# @require_auth(None)
 def activate_meal(meal: str):
+    token = get_token_auth_header()
+    
+    # payload = ValidateJwtRequest(token)
+
+    # if (isinstance(payload, dict) and ("error" in payload)):
+    #     return payload, 401
+
     meal: dict = Manager.ActivateMeal(meal)
 
     if ("error" in meal.keys()):
         return meal, 500
 
     return meal, 200
-    # token = get_token_auth_header()
-    # if isinstance(token, dict):
-    #     if ("error" in token.keys()):
-    #         return token  # Token is already an error responsea
-
-    # payload = verify_jwt(token)
-
-    # if isinstance(payload, dict) and 'error' in payload:
-    #     return payload  # Payload is an error response
-    
-    # user_id = payload.get('sub')
-
-    # data = request.get_json()
-    # if not data:
-    #     return jsonify({"error": "No input data provided"}), 400
-
-    # required_fields = ["email", "full_name"]
-    # for field in required_fields:
-    #     if field not in data:
-    #         return jsonify({"error": f"Missing required field: {field}"}), 400
-        # user = Manager.CreateUser(
-        #     id=user_id,
-        #     email=data["email"],
-        #     full_name=data["full_name"],
-        #     preferred_name=data["preferred_name"],
-        #     dietary_restriction=data["dietary_restriction"],
-        #     allergies=data["allergies"]
-        # )
-
-        # Manager.AddUser(user)
 
 @meal_bp.route("/tokens/<string:email>", methods=["GET"])
 def GetMealTokens(email: str):
+    token = get_token_auth_header()
+    
+    # payload = ValidateJwtRequest(token)
+
+    # if (isinstance(payload, dict) and ("error" in payload)):
+    #     return payload, 401
+
     user = userManager.GetUserByEmail(email)
 
     if (user == None):

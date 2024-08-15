@@ -212,11 +212,4 @@ class AuthManager:
         self.Inactive: dict[str, str] = {}
         self.JwtLookup: dict[str, str] = {}
 
-def ValidateJwtRequest(token):
-    if isinstance(token, dict):
-        return token 
-
-    return verify_jwt(token)
-
-
 authManager = AuthManager()
