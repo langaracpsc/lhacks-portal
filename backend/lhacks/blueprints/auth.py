@@ -8,7 +8,7 @@ import lhacks.oauth as oauth
 from lhacks.db import dbSession
 
 from lhacks.services.usermanager import UserManager, User
-from lhacks.services.auth import AuthManager, verify_jwt
+from lhacks.services.auth import AuthManager, verify_jwt, authManager
 
 from urllib.parse import quote_plus, urlencode
 from flask import Blueprint, url_for, render_template, redirect, session
@@ -18,7 +18,6 @@ from jose import jwt
 auth_bp = Blueprint("auth", __name__)
 
 userManager = UserManager(dbSession)
-authManager = AuthManager()
 
 @auth_bp.route("/callback", methods=["GET", "POST"])
 def callback():
@@ -50,6 +49,7 @@ def get_token(uuid: str):
     response = authManager.Login(uuid)
 
     if "error" in response:
+        print(response)
         return response, 400 if response["type"] == 1 else 401 
 
     return response, 200

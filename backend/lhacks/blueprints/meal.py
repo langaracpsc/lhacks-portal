@@ -5,17 +5,16 @@ from lhacks.services.usermanager import UserManager
 
 from flask import Blueprint, jsonify, request
 from lhacks.db import dbSession
-from lhacks.services.auth import get_token_auth_header, require_auth, verify_jwt
+from lhacks.services.auth import get_token_auth_header, require_auth, verify_jwt, ValidateJwtRequest
 from lhacks.services.usermanager import UserManager
 from lhacks.services.mealmanager import Meal, MealManager
-
+from lhacks.services.auth import authManager
 meal_bp = Blueprint("meal", __name__)
 
 userManager = UserManager(dbSession)
 
 Manager = MealManager(dbSession)
 @meal_bp.route("/", methods=["GET"])
-# @require_auth(None)
 def get_meals():
     # token = get_token_auth_header()
     # if isinstance(token, dict):
@@ -28,7 +27,6 @@ def get_meals():
 
 
 @meal_bp.route("/tokens/issue", methods=["POST"])
-# @require_auth(None)
 def issue_tokens():
     # token = get_token_auth_header()
     # if isinstance(token, dict):
@@ -54,25 +52,25 @@ def issue_tokens():
     return {"success": True, "tokens_created": tokensCreated}, 201
 
 @meal_bp.route("/active", methods=["GET"])
-@require_auth(None)
 def get_active_meal():
-    # token = get_token_auth_header()
-    # if isinstance(token, dict):
-    #     return token  # Token is already an error response
+    token = get_token_auth_header()
+    
+    payload = ValidateJwtRequest(token)
 
-    # payload = verify_jwt(token)
+    if (isinstance(payload, dict) and ("error" in payload)):
+        return payload, 401
 
-    # if isinstance(payload, dict) and 'error' in payload:
-    #     return payload  # Payload is an error response
-    meal: dict | None = Manager.GetActiveMeal()
+    if (not authManager.LookUpToken(token)):
+        return { "error": "Invalid access token." }, 401
+
+    meal: dict = Manager.GetActiveMeal() | None
 
     if (meal == None):
-        return {"error": "No active meal"}, 500
+        return { "error": "No active meal" }, 500
 
     return meal, 200
 
 @meal_bp.route("/deactivate/<string:meal>", methods=["POST"])
-# @require_auth(None)
 def deactivate_meal(meal: str):
     meal: dict = Manager.DeactivateMeal(meal)
 

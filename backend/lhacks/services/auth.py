@@ -19,6 +19,7 @@ def auth_error(description, status_code):
     response = jsonify({"error": description})
     response.status_code = status_code
     return response
+
 class AuthError(Exception):
     def __init__(self, error, status_code):
         self.error = error
@@ -160,7 +161,7 @@ validator = Auth0JWTBearerTokenValidator(AUTH0_DOMAIN, AUTH0_API_IDENTIFIER)
 require_auth.register_token_validator(validator)
 
 class AuthManager:
-    def InsertToken(self, token: dict, user: dict) -> str | None:
+    def InsertToken(self, token: str, user: dict) -> str | None:
         sessionID: str = str(uuid.uuid4())
         
         obj = {
@@ -174,17 +175,22 @@ class AuthManager:
 
         return obj
 
-    def Login(self, sessionID: str) -> dict: 
+    def Login(self, sessionID: str) -> dict:
+        print(f"Inactive: {json.dumps(self.Inactive, indent=2)}") 
+
+        print("JwtLookup: ", json.dumps(self.JwtLookup, indent=2))
+
         if (sessionID in self.Inactive):
             session = self.Inactive[sessionID]
+            
             self.LoggedIn[sessionID] = self.Inactive[sessionID] 
             
             self.Inactive.pop(sessionID)
 
             return session
         
-        elif (sessionID in self.LoggedIn):
-            return { "error": "Already logged in.", "type": 0 }
+        # elif (sessionID in self.LoggedIn):
+        #     return { "error": "Already logged in.", "type": 0 }
 
         return { "error": "Invalid session id.", "type": 1 }
 
@@ -196,6 +202,7 @@ class AuthManager:
 
     def LookUpToken(self, token: str) -> dict | None:
         try:
+            print("JwtLookup: ", json.dumps(self.JwtLookup, indent=2))
             return self.JwtLookup[token]
         except KeyError:
             return None
@@ -204,3 +211,12 @@ class AuthManager:
         self.LoggedIn: dict[str, str] = {}
         self.Inactive: dict[str, str] = {}
         self.JwtLookup: dict[str, str] = {}
+
+def ValidateJwtRequest(token):
+    if isinstance(token, dict):
+        return token 
+
+    return verify_jwt(token)
+
+
+authManager = AuthManager()
