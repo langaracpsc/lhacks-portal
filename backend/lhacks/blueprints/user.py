@@ -1,8 +1,6 @@
 import os
 import sys
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
-
 from lhacks.services.usermanager import UserManager
 
 from flask import Blueprint, jsonify, request
@@ -90,7 +88,6 @@ def test():
         return payload  # Payload is an error response
     
     return jsonify(payload)
-
 
 @user_bp.route("/checkedin/<string:email>", methods=["GET"])
 def is_user_checked_in(email: str):

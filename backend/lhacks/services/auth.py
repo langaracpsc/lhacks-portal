@@ -9,6 +9,7 @@ from authlib.jose.rfc7517.jwk import JsonWebKey
 from authlib.jose.errors import JoseError
 
 from authlib.integrations.flask_oauth2 import ResourceProtector
+from lhacks.decorators.validate_jwt import validate_jwt
 from lhacks.config import AUTH0_DOMAIN, AUTH0_API_IDENTIFIER, ALGORITHMS
 from lhacks.logger import logger
 from flask import request, jsonify
@@ -25,23 +26,6 @@ class AuthError(Exception):
         self.error = error
         self.status_code = status_code
 
-# # Function to get the token from the Authorization header
-# def get_token_auth_header():
-#     auth = request.headers.get("Authorization", None)
-#     if not auth:
-#         return auth_error("Authorization header is expected", 401)
-    
-#     parts = auth.split()
-#     if parts[0].lower() != "bearer":
-#         return auth_error("Authorization header must start with Bearer", 401)
-#     elif len(parts) == 1:
-#         return auth_error("Token not found", 401)
-#     elif len(parts) > 2:
-#         return auth_error("Authorization header must be Bearer token", 401)
-
-#     return parts[1]
-
-# Function to get the public key from Auth0
 def get_rsa_key(kid):
     jsonurl = urlopen(f"https://{AUTH0_DOMAIN}/.well-known/jwks.json")
     jwks = json.loads(jsonurl.read())
@@ -213,3 +197,9 @@ class AuthManager:
         self.JwtLookup: dict[str, str] = {}
 
 authManager = AuthManager()
+
+def HandleLookup(token):
+    if (not authManager.LookUpToken(token)):
+        return { "error": "Invalid access token." }, 401
+
+

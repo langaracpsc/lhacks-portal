@@ -3,11 +3,10 @@ import sys
 
 from lhacks.services.usermanager import UserManager
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint
 from lhacks.db import dbSession
 
-from lhacks.decorators.validate_jwt import validate_jwt
-from lhacks.services.auth import get_token_auth_header, require_auth, verify_jwt
+from lhacks.services.auth import HandleLookup, validate_jwt
 from lhacks.services.usermanager import UserManager
 from lhacks.services.mealmanager import Meal, MealManager
 from lhacks.services.auth import authManager
@@ -19,24 +18,14 @@ userManager = UserManager(dbSession)
 Manager = MealManager(dbSession)
 
 @meal_bp.route("/", methods=["GET"])
+@validate_jwt(HandleLookup)
 def get_meals():
-    token = get_token_auth_header()
-    
-    # payload = ValidateJwtRequest(token)
-
-    # if (isinstance(payload, dict) and ("error" in payload)):
-    #     return payload, 401
-
 
     return Manager.GetMeals(), 200
 
 @meal_bp.route("/tokens/issue", methods=["POST"])
+@validate_jwt(HandleLookup)
 def issue_tokens():
-    # token = get_token_auth_header()
-    
-    # if (isinstance(payload, dict) and ("error" in payload)):
-    #     return payload, 401
-
     users = userManager.GetUsers()
 
     tokensCreated: int = 0
@@ -53,7 +42,7 @@ def issue_tokens():
     return {"success": True, "tokens_created": tokensCreated}, 201
 
 @meal_bp.route("/active", methods=["GET"])
-@validate_jwt()
+@validate_jwt(HandleLookup)
 def get_active_meal(token):
     if (not authManager.LookUpToken(token)):
         return { "error": "Invalid access token." }, 401
@@ -64,10 +53,6 @@ def get_active_meal(token):
         return { "error": "No active meal" }, 500
 
     return meal, 200
-
-def HandleLookup(token):
-    if (not authManager.LookUpToken(token)):
-        return { "error": "Invalid access token." }, 401
 
 @meal_bp.route("/deactivate/<string:meal>", methods=["POST"])
 @validate_jwt(HandleLookup)
@@ -80,14 +65,8 @@ def deactivate_meal(meal: str, token):
     return meal, 200
 
 @meal_bp.route("/activate/<string:meal>", methods=["POST"])
+@validate_jwt(HandleLookup)
 def activate_meal(meal: str):
-    token = get_token_auth_header()
-    
-    # payload = ValidateJwtRequest(token)
-
-    # if (isinstance(payload, dict) and ("error" in payload)):
-    #     return payload, 401
-
     meal: dict = Manager.ActivateMeal(meal)
 
     if ("error" in meal.keys()):
@@ -96,14 +75,8 @@ def activate_meal(meal: str):
     return meal, 200
 
 @meal_bp.route("/tokens/<string:email>", methods=["GET"])
+@validate_jwt(HandleLookup)
 def GetMealTokens(email: str):
-    token = get_token_auth_header()
-    
-    # payload = ValidateJwtRequest(token)
-
-    # if (isinstance(payload, dict) and ("error" in payload)):
-    #     return payload, 401
-
     user = userManager.GetUserByEmail(email)
 
     if (user == None):

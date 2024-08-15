@@ -8,7 +8,7 @@ import lhacks.oauth as oauth
 from lhacks.db import dbSession
 
 from lhacks.services.usermanager import UserManager, User
-from lhacks.services.auth import AuthManager, verify_jwt, authManager
+from lhacks.services.auth import AuthManager, verify_jwt, authManager, validate_jwt, HandleLookup
 
 from urllib.parse import quote_plus, urlencode
 from flask import Blueprint, url_for, render_template, redirect, session
@@ -62,6 +62,7 @@ def login():
     )
 
 @auth_bp.route("/logout")
+@validate_jwt(HandleLookup)
 def logout():
     session.clear()
     

@@ -5,7 +5,7 @@ from lhacks.services.usermanager import UserManager
 
 from flask import Blueprint, jsonify, request
 from lhacks.db import dbSession
-from lhacks.services.auth import get_token_auth_header, require_auth, verify_jwt
+from lhacks.services.auth import HandleLookup, validate_jwt, get_token_auth_header, require_auth, verify_jwt
 from lhacks.services.scanmanager import ScanManager
 from lhacks.services.mealmanager import MealManager
 from lhacks.schema.scan import Scan, ScanType
@@ -18,7 +18,7 @@ userManager = UserManager(dbSession)
 mealManager = MealManager(dbSession)
 
 @scan_bp.route("/create", methods=["POST"])
-# @require_auth(None)
+@validate_jwt(HandleLookup)
 def create_scan():
     token = get_token_auth_header()
 
@@ -33,7 +33,6 @@ def create_scan():
         # return payload  # Payload is an error response
     
     # user_id = payload.get('sub')
-
     data = request.get_json()
 
     if not data:
@@ -79,6 +78,7 @@ def create_scan():
         return jsonify({"error": str(e)}), 500
     
 @scan_bp.route("/filter/<string:email>/<int:type>", methods=["GET"])
+@validate_jwt(HandleLookup)
 def GetScans(email: str, type: int):
     user = userManager.GetUserByEmail(email)
 
