@@ -8,12 +8,11 @@ import lhacks.oauth as oauth
 from lhacks.db import dbSession
 
 from lhacks.services.usermanager import UserManager, User
-from lhacks.services.auth import AuthManager, verify_jwt, authManager, validate_jwt, HandleLookup
+from lhacks.services.auth import AuthManager, authManager, HandleLookup, verify_jwt
+from lhacks.decorators.validate_jwt import validate_jwt
 
 from urllib.parse import quote_plus, urlencode
 from flask import Blueprint, url_for, render_template, redirect, session
-
-from jose import jwt
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -61,22 +60,13 @@ def login():
         redirect_uri = url_for("auth.callback", _external=True)
     )
 
-@auth_bp.route("/logout")
+@auth_bp.route("/logout", methods=["POST"])
 @validate_jwt(HandleLookup)
-def logout():
+def logout(token: str):
     session.clear()
-    
-    return redirect(
-        "https://" + env.get("AUTH0_DOMAIN")
-        + "/v2/logout?"
-        + urlencode(
-            {
-                "returnTo": url_for("home", _external=True),
-                "client_id": env.get("AUTH0_CLIENT_ID"),
-            },
-            quote_via=quote_plus,
-        )
-    )
+    authManager.JwtLookup.pop(token)
+ 
+    return { "success": True }, 200 
 
 @auth_bp.route("/")
 def home():

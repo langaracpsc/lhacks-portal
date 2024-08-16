@@ -6,13 +6,14 @@ from lhacks.services.usermanager import UserManager
 from flask import Blueprint
 from lhacks.db import dbSession
 
-from lhacks.services.auth import HandleLookup, validate_jwt
+from lhacks.services.auth import HandleLookup
+from lhacks.decorators.validate_jwt import validate_jwt
 from lhacks.services.usermanager import UserManager
 from lhacks.services.mealmanager import Meal, MealManager
 from lhacks.services.auth import authManager
 
 meal_bp = Blueprint("meal", __name__)
-
+ 
 userManager = UserManager(dbSession)
 
 Manager = MealManager(dbSession)
@@ -20,7 +21,6 @@ Manager = MealManager(dbSession)
 @meal_bp.route("/", methods=["GET"])
 @validate_jwt(HandleLookup)
 def get_meals():
-
     return Manager.GetMeals(), 200
 
 @meal_bp.route("/tokens/issue", methods=["POST"])

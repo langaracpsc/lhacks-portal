@@ -5,7 +5,8 @@ from lhacks.services.usermanager import UserManager
 
 from flask import Blueprint, jsonify, request
 from lhacks.db import dbSession
-from lhacks.services.auth import HandleLookup, validate_jwt, get_token_auth_header, require_auth, verify_jwt
+from lhacks.services.auth import HandleLookup, get_token_auth_header, require_auth, verify_jwt
+from lhacks.decorators.validate_jwt import validate_jwt 
 from lhacks.services.scanmanager import ScanManager
 from lhacks.services.mealmanager import MealManager
 from lhacks.schema.scan import Scan, ScanType

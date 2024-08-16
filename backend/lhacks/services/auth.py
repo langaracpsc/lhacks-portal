@@ -2,14 +2,12 @@ import json
 import time
 import uuid
 
-from functools import wraps
 from urllib.request import urlopen
 from authlib.oauth2.rfc7523 import JWTBearerTokenValidator
 from authlib.jose.rfc7517.jwk import JsonWebKey
 from authlib.jose.errors import JoseError
 
 from authlib.integrations.flask_oauth2 import ResourceProtector
-from lhacks.decorators.validate_jwt import validate_jwt
 from lhacks.config import AUTH0_DOMAIN, AUTH0_API_IDENTIFIER, ALGORITHMS
 from lhacks.logger import logger
 from flask import request, jsonify
