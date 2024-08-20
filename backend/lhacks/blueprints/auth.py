@@ -67,8 +67,3 @@ def logout(token: str):
     authManager.JwtLookup.pop(token)
  
     return { "success": True }, 200 
-
-@auth_bp.route("/")
-def home():
-   return render_template("home.html", session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4))
- 

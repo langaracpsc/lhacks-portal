@@ -20,20 +20,7 @@ mealManager = MealManager(dbSession)
 
 @scan_bp.route("/create", methods=["POST"])
 @validate_jwt(HandleLookup)
-def create_scan():
-    token = get_token_auth_header()
-
-    if isinstance(token, dict):
-        if ("error" in token.keys()):
-            return token  # Token is already an error responsea
-
-    payload = verify_jwt(token)
-
-    if isinstance(payload, dict) and 'error' in payload:
-        pass
-        # return payload  # Payload is an error response
-    
-    # user_id = payload.get('sub')
+def CreateScan():
     data = request.get_json()
 
     if not data:
@@ -77,7 +64,8 @@ def create_scan():
     except Exception as e:
         print(e)
         return jsonify({"error": str(e)}), 500
-    
+
+
 @scan_bp.route("/filter/<string:email>/<int:type>", methods=["GET"])
 @validate_jwt(HandleLookup)
 def GetScans(email: str, type: int):
