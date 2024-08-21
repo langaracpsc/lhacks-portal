@@ -3,7 +3,9 @@ import sys
 
 from lhacks.services.usermanager import UserManager
 
+from flask_cors import cross_origin
 from flask import Blueprint, jsonify, request
+
 from lhacks.db import dbSession
 from lhacks.services.auth import get_token_auth_header, require_auth, verify_jwt
 from lhacks.services.usermanager import UserManager
@@ -90,6 +92,7 @@ def test():
     return jsonify(payload)
 
 @user_bp.route("/checkedin/<string:email>", methods=["GET"])
+@cross_origin()
 def is_user_checked_in(email: str):
     user = Manager.GetUserByEmail(email)
 

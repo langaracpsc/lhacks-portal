@@ -55,7 +55,6 @@ export default function Header() {
         }
     }
 
-
     // picture not full screen as it was
     return (
         <>

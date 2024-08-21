@@ -158,6 +158,7 @@ class AuthManager:
         return obj
 
     def Login(self, sessionID: str) -> dict:
+        print(f"Login called for {sessionID}")
         print(f"Inactive: {json.dumps(self.Inactive, indent=2)}") 
 
         print("JwtLookup: ", json.dumps(self.JwtLookup, indent=2))

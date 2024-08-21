@@ -4,6 +4,8 @@ import sys
 from lhacks.services.usermanager import UserManager
 
 from flask import Blueprint, jsonify, request
+from flask_cors import cross_origin
+
 from lhacks.db import dbSession
 from lhacks.services.auth import HandleLookup, get_token_auth_header, require_auth, verify_jwt
 from lhacks.decorators.validate_jwt import validate_jwt 
@@ -20,7 +22,8 @@ mealManager = MealManager(dbSession)
 
 @scan_bp.route("/create", methods=["POST"])
 @validate_jwt(HandleLookup)
-def CreateScan():
+@cross_origin()
+def CreateScan(token: str):
     data = request.get_json()
 
     if not data:
@@ -68,6 +71,7 @@ def CreateScan():
 
 @scan_bp.route("/filter/<string:email>/<int:type>", methods=["GET"])
 @validate_jwt(HandleLookup)
+@cross_origin()
 def GetScans(email: str, type: int):
     user = userManager.GetUserByEmail(email)
 

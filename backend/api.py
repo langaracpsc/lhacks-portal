@@ -44,9 +44,4 @@ def disconnected():
     print('Client disconnected')
 
 if __name__ == "__main__":
-    context = SSL.Context(SSL.TLSv1_2_METHOD)
-    
-    context.use_certificate_file('certificate.pem')
-    context.use_privatekey_file('private_key.pem')
-    
-    socketio.run(app, host="0.0.0.0", port=int(env.get("PORT", 3000)), ssl_context=context, debug=True)
+    socketio.run(app, host="0.0.0.0", port=int(env.get("PORT", 3000)), ssl_context=("cert.pem", "key.pem"), debug=True)

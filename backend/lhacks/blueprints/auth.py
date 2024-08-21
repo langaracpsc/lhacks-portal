@@ -6,6 +6,7 @@ import uuid
 from os import environ as env
 import lhacks.oauth as oauth
 from lhacks.db import dbSession
+from flask_cors import cross_origin
 
 from lhacks.services.usermanager import UserManager, User
 from lhacks.services.auth import AuthManager, authManager, HandleLookup, verify_jwt
@@ -44,6 +45,7 @@ def callback():
     return redirect(f"{os.getenv("CLIENT_URL")}/Callback/?uuid={session["sessionID"]}")
 
 @auth_bp.route("/token/<string:uuid>")
+@cross_origin()
 def get_token(uuid: str):
     response = authManager.Login(uuid)
 
@@ -66,4 +68,4 @@ def logout(token: str):
     session.clear()
     authManager.JwtLookup.pop(token)
  
-    return { "success": True }, 200 
+    return { "success": True }, 200

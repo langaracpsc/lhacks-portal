@@ -25,7 +25,7 @@ def get_meals():
 
 @meal_bp.route("/tokens/issue", methods=["POST"])
 @validate_jwt(HandleLookup)
-def issue_tokens():
+def issue_tokens(token):
     users = userManager.GetUsers()
 
     tokensCreated: int = 0

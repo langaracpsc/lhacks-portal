@@ -10,8 +10,11 @@ import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const router = useRouter();
+
+  console.log(`https://${process.env.API_URL}/auth/login`);
+
   useEffect( () => {
-    router.push(`http://100.73.91.105:5001/auth/login`);
+    router.push(`https://${process.env.API_URL}/auth/login`);
   }, [router]);
 
   return (

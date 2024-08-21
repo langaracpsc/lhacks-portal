@@ -5,9 +5,9 @@ import Food from "../food";
 import Header from "../header";
 import { useAuthStore } from "../Store/AuthStore";
 import { waitForDebugger } from "inspector";
+import { setDefaultAutoSelectFamily } from "net";
 
-interface MealToken 
-{ 
+interface MealToken {
     ID: string,
     UserID: string
     MealID: string
@@ -16,24 +16,40 @@ interface MealToken
     CreatedAt: number
 }
 
+const MealMap = ["Breakfast", "Lunch", "Dinner", "Snacks"];
+
 export default function FoodPage() {
-    const {User, Token} = useAuthStore((state: any) => ({ User: state.User, Token: state.Token })); 
+    const { User, Token } = useAuthStore((state: any) => ({ User: state.User, Token: state.Token }));
 
     const [MealTokens, setMealTokens] = useState<MealToken[]>();
-    
-    // TODO: Implement hot reload based on SSE on every token spent post scan 
-        
-    const fetchMealTokens = async () => {
-        const mealTokens = (await (await fetch(`http://100.73.91.105:5001/meal/tokens/${User?.Email}`)).json()) as any[];
 
-        setMealTokens(mealTokens?.filter(token => !token.used).map(token => ({
-            ID: token.id,
-            UserID: token.user_id,
-            MealID: token.meal_id,
-            Used: token.used,
-            UpdatedAt: token.updated_at,
-            CreatedAt: token.created_at
-        } as MealToken)));
+    // TODO: Implement hot reload based on SSE on every token spent post scan 
+
+    const [ActiveMeal, setActiveMeal] = useState<string>();
+
+    const fetchMealTokens = async () => {
+        const activeMeal = (await (await fetch(`https://${process.env.API_URL}/meal/active`, {
+            headers: {
+                "Authorization": `Bearer ${Token}`
+            }
+        })).json());
+
+        if (activeMeal?.error === undefined) {
+            setActiveMeal(MealMap[activeMeal.type]);
+        }
+
+        const mealTokens = (await (await fetch(`https://${process.env.API_URL}/meal/tokens/${User?.Email}`)).json()) as any;
+
+        if (mealTokens?.error === undefined) {
+            setMealTokens(mealTokens?.filter((token: any) => !token.used).map((token: any) => ({
+                ID: token.id,
+                UserID: token.user_id,
+                MealID: token.meal_id,
+                Used: token.used,
+                UpdatedAt: token.updated_at,
+                CreatedAt: token.created_at
+            } as MealToken)));
+        }
     };
 
     useEffect(() => {
@@ -48,9 +64,8 @@ export default function FoodPage() {
             <div className="w-screen h-screen flex justify-end items-start  ">
                 <Header />
             </div>
-      
-            {(User?.ID !== undefined) ? <Food QRCode={User.ID} mealToken={(MealTokens?.length as number)} tokenType='breakfast'></Food> : <>Loading</>}
-        </div>
 
+            {(User?.ID !== undefined && ActiveMeal != undefined && MealTokens != undefined) ? <Food QRCode={User.ID} mealToken={(MealTokens?.length as number)} tokenType={ActiveMeal.toLowerCase()}></Food> : <>{(ActiveMeal == undefined) ? "No active meals" : <>Loading</>}</>}
+        </div>
     </>)
 }
