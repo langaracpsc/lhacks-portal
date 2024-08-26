@@ -13,7 +13,7 @@ export default function Home() {
 
   console.log(`https://${process.env.API_URL}/auth/login`);
 
-  useEffect( () => {
+  useEffect(() => {
     router.push(`https://${process.env.API_URL}/auth/login`);
   }, [router]);
 

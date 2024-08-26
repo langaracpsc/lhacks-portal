@@ -23,9 +23,11 @@ export default function FoodPage() {
 
     const [MealTokens, setMealTokens] = useState<MealToken[]>();
 
-    // TODO: Implement hot reload based on SSE on every token spent post scan 
+    // TODO: Implement hot reload based on web sockets on every token spent post scan 
 
     const [ActiveMeal, setActiveMeal] = useState<string>();
+
+    console.log("Token: ", Token);
 
     const fetchMealTokens = async () => {
         const activeMeal = (await (await fetch(`https://${process.env.API_URL}/meal/active`, {
@@ -38,7 +40,11 @@ export default function FoodPage() {
             setActiveMeal(MealMap[activeMeal.type]);
         }
 
-        const mealTokens = (await (await fetch(`https://${process.env.API_URL}/meal/tokens/${User?.Email}`)).json()) as any;
+        const mealTokens = (await (await fetch(`https://${process.env.API_URL}/meal/tokens/${User?.Email}`,  {
+            headers: {
+                "Authorization": `Bearer ${Token}`
+            }
+        })).json()) as any;
 
         if (mealTokens?.error === undefined) {
             setMealTokens(mealTokens?.filter((token: any) => !token.used).map((token: any) => ({
@@ -53,7 +59,7 @@ export default function FoodPage() {
     };
 
     useEffect(() => {
-        if (User?.ID !== undefined) {
+        if (User?.ID !== undefined && Token != null) {
             fetchMealTokens();
             console.log(MealTokens);
         }
