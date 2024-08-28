@@ -15,6 +15,8 @@ class ScanManager:
         return scan
 
     def GetScans(self, userId: str, type: int) -> list[dict]:
+        scans = None
+
         try:
             scans = self.DB.query(Scan).filter_by(UserID=userId, Type=type).all()
         except Exception as e:

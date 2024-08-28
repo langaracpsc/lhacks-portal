@@ -16,8 +16,8 @@ export default function Home() {
   }, [router])
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center  w-screen bg-black">
-      <Choice/>
+    <main className="flex min-h-screen flex-col items-center justify-center  w-screen bg-black text-white">
+      Redirecting
     </main>
   );
 }

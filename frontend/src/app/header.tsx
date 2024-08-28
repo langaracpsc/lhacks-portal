@@ -2,13 +2,10 @@
 import { useState, useEffect } from 'react';
 import Hamburger from 'hamburger-react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link'
-import Image from 'next/image'
-import svggroup from "./Group_38.svg"
 import { usePathname } from 'next/navigation'
 
 export default function Header() {
-    const pathname = usePathname()
+    const pathname = usePathname();
 
     const [displayCheck, setDisplayCheck] = useState(true);
     const [isOpen, setIsOpen] = useState(false);

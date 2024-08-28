@@ -56,6 +56,7 @@ def upgrade():
     op.create_table('scans',
         sa.Column('id', sa.String(36), nullable=False),
         sa.Column('email', sa.String(256), nullable=False),
+        sa.Column("user_id", sa.String(256), nullable=False),
         sa.Column('createdat', sa.Integer(), nullable=False),
         sa.Column('type', sa.Integer(), nullable=False),
         sa.PrimaryKeyConstraint('id')

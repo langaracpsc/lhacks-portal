@@ -25,7 +25,7 @@ export default function PageToScan() {
                     <Select items={[
                         { key: 0, label: "Check In" },
                         { key: 1, label: "Food" }
-                    ]} ref={scanType}>
+                    ]}>
                         {(item) => <SelectItem key={item.key}>{item.label}</SelectItem>}
                     </Select>
                 </div>
