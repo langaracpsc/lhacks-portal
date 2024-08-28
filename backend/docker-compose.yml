@@ -21,7 +21,7 @@ services:
 
   postgres:
     image: postgres:15-alpine
-    container_name: postgres
+    container_name: lhacksportal-postgres
     environment:
       POSTGRES_DB: lhacksportal
       POSTGRES_USER: postgres
