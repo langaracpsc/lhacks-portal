@@ -1,0 +1,10 @@
+#.env backend
+AUTH0_CLIENT_ID=[redacted]
+AUTH0_CLIENT_SECRET=[redacted]
+AUTH0_DOMAIN=langaracs.us.auth0.com
+AUTH0_API_IDENTIFIER=https://portal.langaracs.ca/
+APP_SECRET_KEY[redacted]
+CONNECTION_STRING=postgresql://postgres:[redacted]@0.0.0.0:5432/lhacksportal 
+PORT=5001
+CLIENT_URL=https://portal.langaracs.ca/ 
+POSTGRES_PASSWORD=[redacted]
