@@ -7,7 +7,8 @@ from flask_cors import cross_origin
 from flask import Blueprint, jsonify, request
 
 from lhacks.db import dbSession
-from lhacks.services.auth import get_token_auth_header, require_auth, verify_jwt
+from lhacks.services.auth import get_token_auth_header, require_auth, verify_jwt, HandleLookup
+from lhacks.decorators.validate_jwt import validate_jwt
 from lhacks.services.usermanager import UserManager
 from lhacks.services.scanmanager import ScanManager
 
@@ -79,7 +80,6 @@ def create_user():
         return jsonify({"error": str(e)}), 500
 
 @user_bp.route("/test")
-@require_auth(None)
 def test():
     token = get_token_auth_header()
     if isinstance(token, dict):
@@ -91,6 +91,7 @@ def test():
     
     return jsonify(payload)
 
+@validate_jwt(HandleLookup)
 @user_bp.route("/checkedin/<string:email>", methods=["GET"])
 @cross_origin()
 def is_user_checked_in(email: str):

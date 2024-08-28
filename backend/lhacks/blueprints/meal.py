@@ -4,6 +4,7 @@ import sys
 from lhacks.services.usermanager import UserManager
 
 from flask import Blueprint
+from flask_cors import cross_origin
 from lhacks.db import dbSession
 
 from lhacks.services.auth import HandleLookup
@@ -18,14 +19,15 @@ userManager = UserManager(dbSession)
 
 Manager = MealManager(dbSession)
 
-@meal_bp.route("/", methods=["GET"])
 @validate_jwt(HandleLookup)
-def get_meals():
+@meal_bp.route("/", methods=["GET"])
+def get_meals(token):
     return Manager.GetMeals(), 200
 
-@meal_bp.route("/tokens/issue", methods=["POST"])
+@cross_origin
 @validate_jwt(HandleLookup)
-def issue_tokens(token):
+@meal_bp.route("/tokens/issue", methods=["POST"])
+def issue_tokens():
     users = userManager.GetUsers()
 
     tokensCreated: int = 0
@@ -41,12 +43,10 @@ def issue_tokens(token):
 
     return {"success": True, "tokens_created": tokensCreated}, 201
 
-@meal_bp.route("/active", methods=["GET"])
 @validate_jwt(HandleLookup)
-def get_active_meal(token):
-    if (not authManager.LookUpToken(token)):
-        return { "error": "Invalid access token." }, 401
-
+@meal_bp.route("/active", methods=["GET"])
+@cross_origin()
+def get_active_meal():
     meal: dict | None = Manager.GetActiveMeal()
 
     if (meal == None):
@@ -54,8 +54,9 @@ def get_active_meal(token):
 
     return meal, 200
 
-@meal_bp.route("/deactivate/<string:meal>", methods=["POST"])
 @validate_jwt(HandleLookup)
+@meal_bp.route("/deactivate/<string:meal>", methods=["POST"])
+@cross_origin()
 def deactivate_meal(meal: str, token):
     meal: dict = Manager.DeactivateMeal(meal)
     
@@ -64,9 +65,10 @@ def deactivate_meal(meal: str, token):
 
     return meal, 200
 
-@meal_bp.route("/activate/<string:meal>", methods=["POST"])
+@cross_origin()
 @validate_jwt(HandleLookup)
-def activate_meal(meal: str):
+@meal_bp.route("/activate/<string:meal>", methods=["POST"])
+def activate_meal(meal: str, token):
     meal: dict = Manager.ActivateMeal(meal)
 
     if ("error" in meal.keys()):
@@ -74,8 +76,9 @@ def activate_meal(meal: str):
 
     return meal, 200
 
-@meal_bp.route("/tokens/<string:email>", methods=["GET"])
 @validate_jwt(HandleLookup)
+@meal_bp.route("/tokens/<string:email>", methods=["GET"])
+@cross_origin()
 def GetMealTokens(email: str):
     user = userManager.GetUserByEmail(email)
 

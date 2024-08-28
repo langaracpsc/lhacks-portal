@@ -5,6 +5,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckInInfo, useAuthStore, User } from "../Store/AuthStore";
 import { select } from "@nextui-org/theme";
+import { UserInfo } from "os";
 
 function CallbackComponent() {
     const searchParams = useSearchParams();

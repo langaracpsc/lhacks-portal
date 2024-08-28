@@ -37,11 +37,19 @@ class UserManager:
             DietaryRestriction=dietary_restriction,
             Allergies=allergies,
             CreatedAt=int(time.time()),
-            Role=role
+            Role=role.value
         )
 
     def GetUserByEmail(self, email: str) -> User | None:
-        return self.DB.query(User).filter_by(Email=email).first()
+        try:
+            return self.DB.query(User).filter_by(Email=email).first()
+        except Exception as e:
+            print("Error: ", e.args[0])
+
+            self.DB.rollback()
+
+            return None
+
 
     def GetUsers(self) -> list[dict]:
         return [user.ToDict() for user in self.DB.query(User).all()]

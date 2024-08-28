@@ -20,16 +20,16 @@ Manager = ScanManager(dbSession)
 userManager = UserManager(dbSession)
 mealManager = MealManager(dbSession)
 
-@scan_bp.route("/create", methods=["POST"])
 @validate_jwt(HandleLookup)
+@scan_bp.route("/create", methods=["POST"])
 @cross_origin()
-def CreateScan(token: str):
+def CreateScan():
     data = request.get_json()
 
     if not data:
         return jsonify({"error": "No input data provided"}), 400
-
     required_fields = ["userid", "type"]
+
     
     for field in required_fields:
         if field not in data:
@@ -69,8 +69,8 @@ def CreateScan(token: str):
         return jsonify({"error": str(e)}), 500
 
 
-@scan_bp.route("/filter/<string:email>/<int:type>", methods=["GET"])
 @validate_jwt(HandleLookup)
+@scan_bp.route("/filter/<string:email>/<int:type>", methods=["GET"])
 @cross_origin()
 def GetScans(email: str, type: int):
     user = userManager.GetUserByEmail(email)

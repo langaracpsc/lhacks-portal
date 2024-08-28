@@ -13,11 +13,15 @@ from lhacks.services.auth import AuthManager, authManager, HandleLookup, verify_
 from lhacks.decorators.validate_jwt import validate_jwt
 
 from urllib.parse import quote_plus, urlencode
-from flask import Blueprint, url_for, render_template, redirect, session
+from flask import Blueprint, url_for, render_template, redirect, session, request
 
 auth_bp = Blueprint("auth", __name__)
 
 userManager = UserManager(dbSession)
+
+@auth_bp.route("/test", methods=["POST"])
+def test():
+    return request
 
 @auth_bp.route("/callback", methods=["GET", "POST"])
 def callback():
@@ -62,8 +66,8 @@ def login():
         redirect_uri = url_for("auth.callback", _external=True)
     )
 
-@auth_bp.route("/logout", methods=["POST"])
 @validate_jwt(HandleLookup)
+@auth_bp.route("/logout", methods=["POST"])
 def logout(token: str):
     session.clear()
     authManager.JwtLookup.pop(token)

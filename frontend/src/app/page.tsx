@@ -11,11 +11,9 @@ import { useRouter } from 'next/navigation';
 export default function Home() {
   const router = useRouter();
 
-  console.log(`https://${process.env.API_URL}/auth/login`);
-
   useEffect(() => {
     router.push(`https://${process.env.API_URL}/auth/login`);
-  }, [router]);
+  }, [router])
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center  w-screen bg-black">

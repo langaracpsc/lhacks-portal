@@ -10,10 +10,14 @@ from lhacks.blueprints.scan import scan_bp
 from lhacks.blueprints.meal import meal_bp
 from lhacks.config import load_environment_variables
 from OpenSSL import SSL
+import logging
 
 load_environment_variables()
 
 app = Flask("lhacks-portal")
+
+logging.basicConfig()
+logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 CORS(app, resources={r"/socket.io/*": {"origins": "*"}})
 app.secret_key = env.get("APP_SECRET_KEY")
