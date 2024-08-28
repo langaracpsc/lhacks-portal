@@ -31,7 +31,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 Create a `.env` file in the root directory with the following variable:
 
 ```
-API_URL=portalback.coderish.me
+API_URL=<BACKEND_URL>
 ```
 
 This environment variable specifies the URL of the backend API that the frontend will communicate with.
