@@ -4,8 +4,6 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckInInfo, useAuthStore, User } from "../Store/AuthStore";
-import { select } from "@nextui-org/theme";
-import { UserInfo } from "os";
 
 function CallbackComponent() {
     const searchParams = useSearchParams();
@@ -15,8 +13,6 @@ function CallbackComponent() {
     const SetUser = useAuthStore((state: any) => (state.SetUser));
     const CheckIn = useAuthStore((state: any) => (state.CheckIn))
 
-    const authStore = useAuthStore();
-    
     const [response, setResponse] = useState<any>();
 
     const router = useRouter();

@@ -12,7 +12,6 @@ from lhacks.services.usermanager import UserManager, User
 from lhacks.services.auth import AuthManager, authManager, HandleLookup, verify_jwt
 from lhacks.decorators.validate_jwt import validate_jwt
 
-from urllib.parse import quote_plus, urlencode
 from flask import Blueprint, url_for, render_template, redirect, session, request
 
 auth_bp = Blueprint("auth", __name__)
@@ -46,7 +45,7 @@ def callback():
     
     session: dict = authManager.InsertToken(token, user.ToDict()) 
 
-    return redirect(f"{os.getenv("CLIENT_URL")}/Callback/?uuid={session["sessionID"]}")
+    return redirect(f"{os.getenv("CLIENT_URL")}/callback/?uuid={session["sessionID"]}")
 
 @auth_bp.route("/token/<string:uuid>")
 @cross_origin()
