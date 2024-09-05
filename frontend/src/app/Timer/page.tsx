@@ -25,7 +25,7 @@ const events = [
   { time: '13:00', title: 'Coding Time', date: 'September 22' },
   { time: '14:00', title: 'Judging + Presentations', date: 'September 22' },
   { time: '16:00', title: 'Deploying with Defang', date: 'September 22' },
-  { time: '17:00', title: 'Closing Ceremony', date: 'September 21' },
+  { time: '17:00', title: 'Closing Ceremony', date: 'September 22' },
 ];
 
 
