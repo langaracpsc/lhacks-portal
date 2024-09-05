@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --experimental-https",
     "build": "next build",
     "start": "next start -p 3000",
     "lint": "next lint"
@@ -24,6 +24,7 @@
     "next-qrcode": "^2.5.1",
     "react": "^18",
     "react-dom": "^18",
+    "react-loading-icons": "^1.1.0",
     "zustand": "^4.5.4"
   },
   "devDependencies": {

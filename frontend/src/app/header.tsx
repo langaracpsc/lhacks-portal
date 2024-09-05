@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Hamburger from 'hamburger-react';
 import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation'
+import { useAuthStore } from './Store/AuthStore';
 
 export default function Header() {
     const pathname = usePathname();
@@ -10,6 +11,13 @@ export default function Header() {
     const [displayCheck, setDisplayCheck] = useState(true);
     const [isOpen, setIsOpen] = useState(false);
 
+    const { User, Token } = useAuthStore((state: any) => ({User: state.User, Token: state.Token})); 
+
+    const nameSplit = User.FullName?.split(' ');
+    
+    console.log({
+        User, Token
+    })
     // useEffect(() => { // why?
     //     console.log(isOpen)
     // }, [isOpen])
@@ -33,6 +41,7 @@ export default function Header() {
         handleResize();
 
         window.addEventListener('resize', handleResize);
+        
 
         return () => window.removeEventListener('resize', handleResize);
     }, []);
@@ -55,7 +64,9 @@ export default function Header() {
     // picture not full screen as it was
     return (
         <>
-            <div className={`z-20 bg-black w-screen     h-screen absolute  ${isOpen ? "visible animate-slide-in  overflow-y-hidden " : "hidden "}`}>
+            <div className={`z-20 bg-black w-screen ${User.CheckinInfo.CheckedIn ? "":" flex justify-center items-center"}     h-screen absolute  ${isOpen ? "visible animate-slide-in  overflow-y-hidden " : "hidden "}`}>
+                {User.CheckinInfo.CheckedIn ?
+            
                 <div className={"  flex flex-col w-screen  items-start justify-center gap-8 "}>
                     <p className="p-4 text-2xl">Log on as:</p>
                     <div className={"border-b-2 hover:border-orange-500 [&>*]:hover:text-orange-500"}>
@@ -90,8 +101,27 @@ export default function Header() {
                             Sponsors
                         </button>
                     </div>
-                </div>
 
+                    
+                    <div className={`border-b-2 hover:border-orange-500 [&>*]:hover:text-orange-500 ${User.Role == 1? "visible":"hidden"}`} >
+                        <button onClick={() => { 
+                            setIsOpen(false);
+                            router.push("/scanQrCode");
+                        }} className="font-bold text-3xl px-6 py-2 bg-none hover:text-orange-500 text-white rounded">
+                            Scanner
+                        </button>
+                    </div>
+                    
+                    
+                    
+                </div>
+                :
+                <div className=' flex justify-center items-center'>
+
+                    <h1 className=' text-white text-xl'>Check in to acces this section</h1>
+
+                </div>
+}
 
             </div>
 

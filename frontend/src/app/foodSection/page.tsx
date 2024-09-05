@@ -6,6 +6,9 @@ import Header from "../header";
 import { useAuthStore } from "../Store/AuthStore";
 import { waitForDebugger } from "inspector";
 import { setDefaultAutoSelectFamily } from "net";
+import { useRouter } from "next/navigation";
+import LoadingIcons, { Circles } from 'react-loading-icons'
+
 
 interface MealToken {
     ID: string,
@@ -20,6 +23,15 @@ const MealMap = ["Breakfast", "Lunch", "Dinner", "Snacks"];
 
 export default function FoodPage() {
     const { User, Token } = useAuthStore((state: any) => ({ User: state.User, Token: state.Token }));
+
+    const router = useRouter()
+
+    useEffect(() => {
+        if(!User.CheckinInfo.CheckedIn){
+            router.push("/CheckinPage")
+        }
+    }, [])
+
 
     const [MealTokens, setMealTokens] = useState<MealToken[]>();
 
@@ -66,12 +78,20 @@ export default function FoodPage() {
     }, [User]);
 
     return (<>
-        <div className="w-screen h-screen flex flex-col items-center gap-32 ">
-            <div className="w-screen h-screen flex justify-end items-start  ">
+        {User.CheckinInfo.CheckedIn ? <div className="flex flex-col w-screen h-screen gap-10 ">
+            <div className="w-screen h-fit flex justify-end items-start  ">
                 <Header />
             </div>
+           
+            
 
             {(User?.ID !== undefined && ActiveMeal != undefined && MealTokens != undefined) ? <Food QRCode={User.ID} mealToken={(MealTokens?.length as number)} tokenType={ActiveMeal.toLowerCase()}></Food> : <>{(ActiveMeal == undefined) ? "No active meals" : <>Loading</>}</>}
+        </div>:
+        
+        <div className="w-screen h-screen flex  justify-center items-center gap-32">
+            <Circles />
         </div>
+        
+        }
     </>)
 }

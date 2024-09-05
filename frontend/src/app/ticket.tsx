@@ -19,11 +19,11 @@ export default function Ticket({ QRCode, Name, FName, Status, CheckInTime }: Tic
             errorCorrectionLevel: 'M',
             margin: 3,
             scale: 4,
-            width: 300,
+            width: 360,
 
           }}
         />
-        <div className='flex flex-col gap-5 justify-center items-start '>
+        <div className='flex flex-col gap-5 justify-center items-start w-[360px]  '>
           <p className="text-3xl font-bold text-orange-500 ">{Name}</p>
           <p className="text-3xl font-bold  text-orange-500">{FName}</p>
           <p className="text-3xl font-bold text-white">Status: <span className='text-orange-500'>{Status ? "Checked in" : "Not Checked in"}</span></p>

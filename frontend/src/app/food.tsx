@@ -18,7 +18,7 @@ export default function Food({ QRCode, mealToken, tokenType }: FoodProps) {
               errorCorrectionLevel: 'M',
               margin: 3,
               scale: 4,
-              width: 300,
+              width: 360,
               
           }}
         />
