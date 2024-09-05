@@ -68,7 +68,7 @@ def deactivate_meal(meal: str, token):
 @cross_origin()
 @validate_jwt(HandleLookup)
 @meal_bp.route("/activate/<string:meal>", methods=["POST"])
-def activate_meal(meal: str, token):
+def activate_meal(meal: str):
     meal: dict = Manager.ActivateMeal(meal)
 
     if ("error" in meal.keys()):
