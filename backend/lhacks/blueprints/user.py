@@ -28,7 +28,7 @@ def get_user_info():
     payload = verify_jwt(token)
     if isinstance(payload, dict) and 'error' in payload:
         return payload  # Payload is an error response
-    
+
     user_id = payload.get('sub')
 
     user_info = Manager.GetUserInfo(user_id)
@@ -50,7 +50,7 @@ def create_user():
 
     if isinstance(payload, dict) and 'error' in payload:
         return payload  # Payload is an error response
-    
+
     user_id = payload.get('sub')
 
     data = request.get_json()
@@ -61,7 +61,7 @@ def create_user():
     for field in required_fields:
         if field not in data:
             return jsonify({"error": f"Missing required field: {field}"}), 400
-    
+
     try:
         user = Manager.CreateUser(
             id=user_id,
@@ -75,7 +75,7 @@ def create_user():
         Manager.AddUser(user)
 
         return jsonify({"message": "User added successfully"}), 201
-    
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -88,7 +88,7 @@ def test():
     payload = verify_jwt(token)
     if isinstance(payload, dict) and 'error' in payload:
         return payload  # Payload is an error response
-    
+
     return jsonify(payload)
 
 @validate_jwt(HandleLookup)
@@ -104,5 +104,5 @@ def is_user_checked_in(email: str):
 
     if (len(scans) > 0):
         return {"checked_in": True, "scan": scans[0]}, 200
-        
+
     return {"checked_in": False }, 200
