@@ -34,9 +34,9 @@ const eventDates: Array<Date> = [
   new Date("2024-09-22T16:00:00-07:00"), // Deploying with Defang
   new Date("2024-09-22T17:00:00-07:00"),
 ];
+
 let currentDate = new Date();
 let holdTime: string = "";
-var display = "";
 
 // need to set up emphasizing of the current event/check what event is current
 
