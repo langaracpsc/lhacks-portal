@@ -55,7 +55,6 @@ export default function Schedule({ events }: ScheduleProps) {
       currentDate = new Date();
       var dateToUse = eventDate.getTime() - currentDate.getTime();
 
-      console.log(dateToUse);
       holdTime = formatTime(dateToUse);
       setTime(holdTime);
     }, 1000);
@@ -68,9 +67,6 @@ export default function Schedule({ events }: ScheduleProps) {
       "0",
     );
     const seconds = String(Math.floor((date % 60000) / 1000)).padStart(2, "0");
-
-    console.log(`${hours}:${minutes}:${seconds}`);
-
     return `${hours}:${minutes}:${seconds}`;
   };
 
