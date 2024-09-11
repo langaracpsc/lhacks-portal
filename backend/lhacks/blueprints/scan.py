@@ -8,7 +8,8 @@ from flask_cors import cross_origin
 
 from lhacks.db import dbSession
 from lhacks.services.auth import HandleLookup, get_token_auth_header, require_auth, verify_jwt
-from lhacks.decorators.validate_jwt import validate_jwt 
+from lhacks.decorators.validate_jwt import validate_jwt
+from lhacks.services.auth import authManager
 from lhacks.services.scanmanager import ScanManager
 from lhacks.services.mealmanager import MealManager
 from lhacks.schema.scan import Scan, ScanType
@@ -30,25 +31,40 @@ def CreateScan():
         return jsonify({"error": "No input data provided"}), 400
     required_fields = ["userid", "type"]
 
-    
+
     for field in required_fields:
         if field not in data:
             return jsonify({"error": f"Missing required field: {field}"}), 400
-    
+
+    token = get_token_auth_header()
+
+    if isinstance(token, dict):
+        return token, 401
+
     try:
-        scan = Manager.CreateScan(data["userid"], int(data["type"]))
+        user: dict | None = authManager.LookUpToken(token)["user"]
+
+        if (user["Role"] > 1):
+            print(user)
+            return {"error": "Not enough privilages."}, 403
+
+    except Exception as e:
+        return {"error": "Invalid token."}, 403
+
+    try:
+        scan = Manager.CreateScan(data["userid"], ScanType(int(data["type"])))
 
         if (scan.Type == ScanType.Meal.value):
             meal = mealManager.GetActiveMeal()
 
             if (meal == None):
-               return {"error": "No active meal."}, 500  
+               return {"error": "No active meal."}, 500
 
             if ("meal" not in data):
                return {"error": "Meal name not provided for the scan."}, 500
-          
+
             token = mealManager.SpendToken(data["userid"], meal["name"])
-           
+
             if ("error" in token):
                return token, 500
 
@@ -59,11 +75,11 @@ def CreateScan():
                 Manager.AddScan(Manager.CreateScan(data["userid"], int(data["type"])))
             else:
                 return {"error": "User already checked in."}, 500
-        
+
         Manager.AddScan(scan)
-        
+
         return {"success": True, "message": "Scan created successfully", "scan": scan.ToDict() }, 201
-    
+
     except Exception as e:
         print(e)
         return jsonify({"error": str(e)}), 500
@@ -76,10 +92,8 @@ def GetScans(email: str, type: int):
     user = userManager.GetUserByEmail(email)
 
     if (user == None):
-        return {"error": "User doesn't exist"}, 500 
+        return {"error": "User doesn't exist"}, 500
 
     scans = Manager.GetScansByUserID(user.ID, type)
-    
+
     return { "scans": scans }
-
-
