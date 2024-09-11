@@ -1,8 +1,7 @@
 "use client";
-import { MutableRefObject, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Header from "../header";
 import ScanQrCode from "../LogIn/executive";
-import Hamburger from "hamburger-react";
 import { Select, SelectItem } from "@nextui-org/select";
 
 export default function PageToScan() {

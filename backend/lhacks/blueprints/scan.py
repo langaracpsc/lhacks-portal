@@ -44,7 +44,7 @@ def CreateScan():
     try:
         user: dict | None = authManager.LookUpToken(token)["user"]
 
-        if (user["Role"] > 1):
+        if (user[""] > 1):
             print(user)
             return {"error": "Not enough privilages."}, 403
 
