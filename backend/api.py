@@ -1,9 +1,12 @@
-import lhacks.oauth as oauth  
+import json
+from ssl import socket_error
+import lhacks.oauth as oauth
 from os import environ as env
 from authlib.integrations.flask_client import OAuth
-from flask import Flask
+from flask import Flask, request
 from flask_socketio import SocketIO
 from flask_cors import CORS
+from lhacks.services.socketsessionmanager import SocketSession, socketSessionManager
 from lhacks.blueprints.auth import auth_bp
 from lhacks.blueprints.user import user_bp
 from lhacks.blueprints.scan import scan_bp
@@ -17,7 +20,7 @@ load_environment_variables()
 app = Flask("lhacks-portal")
 
 logging.basicConfig()
-logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
 
 CORS(app, resources={r"/socket.io/*": {"origins": "*"}})
 app.secret_key = env.get("APP_SECRET_KEY")
@@ -29,23 +32,41 @@ oauth.oauth.register(
     client_kwargs={
         "scope": "openid profile email",
     },
-    server_metadata_url=f'https://{env.get("AUTH0_DOMAIN")}/.well-known/openid-configuration'
-)   
+    server_metadata_url=f'https://{env.get("AUTH0_DOMAIN")}/.well-known/openid-configuration',
+)
 
 app.register_blueprint(auth_bp, url_prefix="/auth")
-app.register_blueprint(user_bp, url_prefix="/user") 
-app.register_blueprint(scan_bp, url_prefix="/scan") 
-app.register_blueprint(meal_bp, url_prefix="/meal") 
+app.register_blueprint(user_bp, url_prefix="/user")
+app.register_blueprint(scan_bp, url_prefix="/scan")
+app.register_blueprint(meal_bp, url_prefix="/meal")
 
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-@socketio.on('connect')
-def connected():
-    print('Client connected')
 
-@socketio.on('disconnect')
+@socketio.on("connect")
+def connected():
+    print("Client connected")
+
+
+@socketio.on("disconnect")
 def disconnected():
-    print('Client disconnected')
+    socketSessionManager.DestroySession(request.sid)
+    print("Sessions: ", socketSessionManager.Sessions)
+
+
+@socketio.on("register")
+def register(data: str):
+    print("register: ", data)
+    session = socketSessionManager.CreateSession(request.sid, data)
+    session.Emit("response", json.dumps(session.ToDict()))
+    print("session: ", socketSessionManager.Sessions)
+
 
 if __name__ == "__main__":
-    socketio.run(app, host="0.0.0.0", port=int(env.get("PORT", 3000)), ssl_context=("cert.pem", "key.pem"), debug=True)
+    socketio.run(
+        app,
+        host="0.0.0.0",
+        port=int(env.get("PORT", 3000)),
+        ssl_context=("cert.pem", "key.pem"),
+        debug=True,
+    )
