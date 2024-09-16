@@ -4,8 +4,8 @@ import lhacks.oauth as oauth
 from os import environ as env
 from authlib.integrations.flask_client import OAuth
 from flask import Flask, request
-from flask_socketio import SocketIO
 from flask_cors import CORS
+from flask_socketio import SocketIO
 from lhacks.services.socketsessionmanager import SocketSession, socketSessionManager
 from lhacks.blueprints.auth import auth_bp
 from lhacks.blueprints.user import user_bp
@@ -14,10 +14,13 @@ from lhacks.blueprints.meal import meal_bp
 from lhacks.config import load_environment_variables
 from OpenSSL import SSL
 import logging
+import lhacks.sockets.globals as socket
 
 load_environment_variables()
 
 app = Flask("lhacks-portal")
+
+socket.socketio = SocketIO(app, cors_allowed_origins="*")
 
 logging.basicConfig()
 logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
@@ -40,21 +43,19 @@ app.register_blueprint(user_bp, url_prefix="/user")
 app.register_blueprint(scan_bp, url_prefix="/scan")
 app.register_blueprint(meal_bp, url_prefix="/meal")
 
-socketio = SocketIO(app, cors_allowed_origins="*")
 
-
-@socketio.on("connect")
+@socket.socketio.on("connect")
 def connected():
     print("Client connected")
 
 
-@socketio.on("disconnect")
+@socket.socketio.on("disconnect")
 def disconnected():
     socketSessionManager.DestroySession(request.sid)
     print("Sessions: ", socketSessionManager.Sessions)
 
 
-@socketio.on("register")
+@socket.socketio.on("register")
 def register(data: str):
     print("register: ", data)
     session = socketSessionManager.CreateSession(request.sid, data)
@@ -63,7 +64,7 @@ def register(data: str):
 
 
 if __name__ == "__main__":
-    socketio.run(
+    socket.socketio.run(
         app,
         host="0.0.0.0",
         port=int(env.get("PORT", 3000)),

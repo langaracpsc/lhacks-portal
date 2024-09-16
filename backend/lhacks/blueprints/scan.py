@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 
@@ -17,9 +18,11 @@ from lhacks.decorators.validate_jwt import validate_jwt
 from lhacks.services.auth import authManager
 from lhacks.services.scanmanager import ScanManager
 from lhacks.services.mealmanager import MealManager
-from lhacks.services.socketsessionmanager import socketSessionManager
+from lhacks.services.socketsessionmanager import SocketSession, socketSessionManager
 
 from lhacks.schema.scan import Scan, ScanType
+
+import lhacks.sockets.globals as socket
 
 scan_bp = Blueprint("scan", __name__)
 
@@ -51,7 +54,7 @@ def CreateScan():
     try:
         user: dict | None = authManager.LookUpToken(token)["user"]
 
-        if user[""] > 1:
+        if user["Role"] > 1:
             print(user)
             return {"error": "Not enough privilages."}, 403
 
@@ -82,6 +85,12 @@ def CreateScan():
                 Manager.AddScan(Manager.CreateScan(data["userid"], int(data["type"])))
             else:
                 return {"error": "User already checked in."}, 500
+
+        socketSession: SocketSession | None = socketSessionManager.GetSessionByUser(
+            data["userid"]
+        )
+
+        socketSession.Emit("response", json.dumps({"scan": True}))
 
         Manager.AddScan(scan)
 

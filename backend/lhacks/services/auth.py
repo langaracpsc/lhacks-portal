@@ -13,6 +13,7 @@ from lhacks.logger import logger
 from flask import request, jsonify
 from jose import jwt, JWTError
 
+
 # Function to handle authorization errors
 def auth_error(description, status_code):
     response = jsonify({"error": description})
@@ -160,10 +161,12 @@ class Auth0JWTBearerTokenValidator(JWTBearerTokenValidator):
             "iss": {"essential": True, "value": issuer},
         }
 
+
 require_auth = ResourceProtector()
 validator = Auth0JWTBearerTokenValidator(AUTH0_DOMAIN, AUTH0_API_IDENTIFIER)
 
 require_auth.register_token_validator(validator)
+
 
 class AuthManager:
     def InsertToken(self, token: str, user: dict) -> dict:
@@ -208,12 +211,13 @@ class AuthManager:
             return None
 
     def __init__(self):
-        self.LoggedIn: dict[str, str] = {}
-        self.Inactive: dict[str, str] = {}
-        self.JwtLookup: dict[str, str] = {}
+        self.LoggedIn: dict[str, dict] = {}
+        self.Inactive: dict[str, dict] = {}
+        self.JwtLookup: dict[str, dict] = {}
 
 
 authManager = AuthManager()
+
 
 def HandleLookup(token):
     if not authManager.LookUpToken(token):

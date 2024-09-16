@@ -2,6 +2,7 @@ from typing import Callable
 from typing_extensions import Any
 
 from flask_socketio import emit, join_room, leave_room
+import lhacks.sockets.globals as socket
 
 
 class SocketSession:
@@ -13,7 +14,7 @@ class SocketSession:
         return {"id": self.ID, "userId": self.UserID}
 
     def Emit(self, event: str, data: Any):
-        emit(event, data, to=self.ID)
+        socket.socketio.emit(event, data, to=self.ID)
 
 
 class SocketSessionManager:
@@ -30,6 +31,14 @@ class SocketSessionManager:
         leave_room(self.Sessions[id].ID)
 
         return self.Sessions.pop(id)
+
+    def GetSessionByUser(self, id: str):
+        for key in self.Sessions:
+            session: SocketSession = self.Sessions[key]
+            if session.UserID == id:
+                return session
+
+        return None
 
     def __init__(self):
         self.Sessions: dict = {}

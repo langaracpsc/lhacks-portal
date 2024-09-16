@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Food from "../food";
 import Header from "../header";
 import { useAuthStore } from "../Store/AuthStore";
@@ -8,6 +8,7 @@ import { waitForDebugger } from "inspector";
 import { setDefaultAutoSelectFamily } from "net";
 import { useRouter } from "next/navigation";
 import LoadingIcons, { Circles } from "react-loading-icons";
+import useSocketService from "../hooks/useSocketService";
 
 interface MealToken {
   ID: string;
@@ -40,8 +41,6 @@ export default function FoodPage() {
 
   const [ActiveMeal, setActiveMeal] = useState<string>();
 
-  console.log("Token: ", Token);
-
   const fetchMealTokens = async () => {
     const activeMeal = await (
       await fetch(`https://${process.env.API_URL}/meal/active`, {
@@ -51,8 +50,12 @@ export default function FoodPage() {
       })
     ).json();
 
+    console.log("Active meal: ", activeMeal);
+
     if (activeMeal?.error === undefined) {
       setActiveMeal(MealMap[activeMeal.type]);
+    } else {
+      console.log("Error occured with active meal: ", activeMeal);
     }
 
     const mealTokens = (await (
@@ -82,12 +85,29 @@ export default function FoodPage() {
     }
   };
 
+  const Registered = useRef<boolean>(false);
+
+  const { Socket } = useSocketService({
+    URL: process.env.API_URL as string,
+
+    OnResponse: (data: string) => {
+      const response = JSON.parse(data);
+
+      console.log("Response: ", response);
+
+      if (response?.scan) fetchMealTokens();
+      else if (response?.UserID) {
+        console.log("User registered");
+        Registered.current = true;
+      }
+    },
+  });
+
+  if (!Registered.current) Socket.emit("register", User.ID);
+
   useEffect(() => {
-    if (User?.ID !== undefined && Token != null) {
-      fetchMealTokens();
-      console.log(MealTokens);
-    }
-  }, [User]);
+    if (MealTokens === undefined) fetchMealTokens();
+  }, [MealTokens]);
 
   return (
     <>
