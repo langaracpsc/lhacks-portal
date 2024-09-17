@@ -95,7 +95,7 @@ export default function FoodPage() {
 
       console.log("Response: ", response);
 
-      if (response?.scan) fetchMealTokens();
+      if (response?.scan && User?.ID) fetchMealTokens();
       else if (response?.UserID) {
         console.log("User registered");
         Registered.current = true;
@@ -105,9 +105,9 @@ export default function FoodPage() {
 
   if (!Registered.current) Socket.emit("register", User.ID);
 
-  useEffect(() => {
-    if (MealTokens === undefined) fetchMealTokens();
-  }, [MealTokens]);
+  console.log(`Socket session in foodSection: ${Socket.id}`);
+
+  if (MealTokens === undefined) fetchMealTokens();
 
   return (
     <>

@@ -1,8 +1,10 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useReducer, useRef } from "react";
 import Header from "../header";
 import { useAuthStore, User } from "../Store/AuthStore";
 import Ticket from "../ticket";
+import useSocketService from "../hooks/useSocketService";
+import { fetchCheckinInfo } from "../user/service";
 
 export default function CheckInPage() {
   const { User, Token } = useAuthStore((state: any) => ({
@@ -10,6 +12,39 @@ export default function CheckInPage() {
     Token: state.Token,
   }));
 
+  const Registered = useRef<boolean>(false);
+
+  const CheckIn = useAuthStore((state: any) => state.CheckIn);
+
+  const [, forceUpdate] = useReducer((x) => x + 1, 0);
+
+  const { Socket } = useSocketService({
+    URL: process.env.API_URL as string,
+
+    OnResponse: (data: string) => {
+      const response = JSON.parse(data);
+
+      console.log("Response CheckedIn: ", response);
+
+      if (response?.scan && User && Token) {
+        fetchCheckinInfo(User, Token).then((checkinResponse: any) => {
+          CheckIn(User, {
+            CheckedIn: checkinResponse.checked_in,
+            Time: checkinResponse?.scan?.created_at,
+          });
+
+          forceUpdate();
+        });
+      } else if (response?.UserID) {
+        console.log("User registered in CheckIn");
+        Registered.current = true;
+      }
+    },
+  });
+
+  if (!Registered.current) Socket.emit("register", User.ID);
+
+  console.log(`Socket session in Checkin: ${Socket.id}`);
   const checkedIn = useRef<boolean>(false);
 
   if (User?.CheckinInfo?.CheckedIn !== undefined)

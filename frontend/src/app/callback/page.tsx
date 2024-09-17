@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckInInfo, useAuthStore, User } from "../Store/AuthStore";
+import { fetchCheckinInfo } from "../user/service";
 
 function CallbackComponent() {
   const searchParams = useSearchParams();
@@ -32,28 +33,13 @@ function CallbackComponent() {
   const selected = useAuthStore((state: any) => [state.User, state.Token]);
 
   useEffect(() => {
-    let checkinResponse: any;
-
-    const fetchCheckinInfo = async (user: User) => {
-      checkinResponse = (await (
-        await fetch(
-          `https://${process.env.API_URL}/user/checkedin/${user.Email}`,
-          {
-            headers: {
-              Authorization: `Bearer ${selected[0]}`,
-            },
-          },
-        )
-      ).json()) as CheckInInfo;
-    };
-
     if (response?.token && response?.user) {
       const user: User = response?.user;
 
       SetToken(response?.token);
       SetUser(user);
 
-      fetchCheckinInfo(user).then(() => {
+      fetchCheckinInfo(user, selected[0]).then((checkinResponse: any) => {
         CheckIn(user, {
           CheckedIn: checkinResponse.checked_in,
           Time: checkinResponse?.scan?.created_at,
