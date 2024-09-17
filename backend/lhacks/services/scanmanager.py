@@ -4,6 +4,7 @@ import time
 from lhacks.schema.scan import Scan, ScanType
 from sqlalchemy.orm import Session
 
+
 class ScanManager:
     def __init__(self, db: Session):
         self.DB = db
@@ -25,8 +26,13 @@ class ScanManager:
 
         return [] if scans == None else [scan.ToDict() for scan in scans]
 
-    def CreateScan(self, userID: str, type: ScanType) -> Scan:
-        return Scan(ID=str(uuid.uuid4()), UserID=userID, Type=int(type.value), CreatedAt=time.time())
+    def CreateScan(self, userID: str, type: int) -> Scan:
+        return Scan(
+            ID=str(uuid.uuid4()),
+            UserID=userID,
+            Type=type,
+            CreatedAt=time.time(),
+        )
 
     def GetScansByUserID(self, userID: str) -> list[Scan]:
         return self.DB.query(Scan).where(id=userID)

@@ -62,7 +62,7 @@ def CreateScan():
         return {"error": "Invalid token."}, 403
 
     try:
-        scan = Manager.CreateScan(data["userid"], ScanType(int(data["type"])))
+        scan = Manager.CreateScan(data["userid"], int(data["type"]))
 
         if scan.Type == ScanType.Meal.value:
             meal = mealManager.GetActiveMeal()
