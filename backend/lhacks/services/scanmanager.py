@@ -4,7 +4,6 @@ import time
 from lhacks.schema.scan import Scan, ScanType
 from sqlalchemy.orm import Session
 
-
 class ScanManager:
     def __init__(self, db: Session):
         self.DB = db

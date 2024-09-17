@@ -58,8 +58,15 @@ def disconnected():
 @socket.socketio.on("register")
 def register(data: str):
     print("register: ", data)
+
+    session: SocketSession | None = socketSessionManager.GetSessionByUser(data)
+
+    if session:
+        session.Emit("response", json.dumps({"error": "User already registered."}))
+
     session = socketSessionManager.CreateSession(request.sid, data)
     session.Emit("response", json.dumps(session.ToDict()))
+
     print("session: ", socketSessionManager.Sessions)
 
 
