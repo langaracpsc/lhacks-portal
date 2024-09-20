@@ -8,7 +8,8 @@ import { useAuthStore } from "./Store/AuthStore";
 export default function Header() {
   const pathname = usePathname();
 
-  const [displayCheck, setDisplayCheck] = useState(true);
+  const [displayCheck, setDisplayCheck] = useState<boolean>(true);
+
   const [isOpen, setIsOpen] = useState(false);
 
   const { User, Token } = useAuthStore((state: any) => ({
@@ -29,14 +30,13 @@ export default function Header() {
     User,
     Token,
   });
-  // useEffect(() => { // why?
-  //     console.log(isOpen)
-  // }, [isOpen])
+
   const toggleNavBar = () => {
     setIsOpen(!isOpen);
   };
 
   const router = useRouter();
+
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 1000) {
@@ -72,10 +72,9 @@ export default function Header() {
         {checkedIn.current ? (
           <div
             className={
-              "  flex flex-col w-screen  items-start justify-center gap-8 "
+              "  flex flex-col w-screen  items-start justify-center gap-8 mt-7"
             }
           >
-            <p className="p-4 text-2xl">Log on as:</p>
             <div
               className={
                 "border-b-2 hover:border-orange-500 [&>*]:hover:text-orange-500"

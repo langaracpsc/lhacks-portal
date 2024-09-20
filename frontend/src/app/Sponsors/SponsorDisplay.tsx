@@ -155,7 +155,9 @@ const SponsorDisplay: React.FC = () => {
       {checkedIn.current ? (
         <div className="w-screen h-full flex flex-col items-center gap-32 bg-black ">
           <div className="flex flex-col w-11/12  gap-10 justify-center items-center ">
-            <h2 className="text-2xl font-bold mb-4 text-center">Sponsors</h2>
+            <h2 className="text-2xl font-bold mb-4 text-center text-white">
+              Sponsors
+            </h2>
             {renderSponsors(sponsorsData.current)}
           </div>
         </div>

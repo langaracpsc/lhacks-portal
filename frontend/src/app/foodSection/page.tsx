@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import Food from "../food";
 import Header from "../header";
 import { useAuthStore } from "../Store/AuthStore";
@@ -9,6 +9,7 @@ import { setDefaultAutoSelectFamily } from "net";
 import { useRouter } from "next/navigation";
 import LoadingIcons, { Circles } from "react-loading-icons";
 import useSocketService from "../hooks/useSocketService";
+import { Oi } from "next/font/google";
 
 interface MealToken {
   ID: string;
@@ -37,8 +38,6 @@ export default function FoodPage() {
 
   const [MealTokens, setMealTokens] = useState<MealToken[]>();
 
-  // TODO: Implement hot reload based on web sockets on every token spent post scan
-
   const [ActiveMeal, setActiveMeal] = useState<string>();
 
   const fetchMealTokens = async () => {
@@ -66,6 +65,8 @@ export default function FoodPage() {
       })
     ).json()) as any;
 
+    console.log(mealTokens);
+
     if (mealTokens?.error === undefined) {
       setMealTokens(
         mealTokens
@@ -85,6 +86,10 @@ export default function FoodPage() {
     }
   };
 
+  const [, forceUpdate] = useReducer((x) => x + 1, 0);
+
+  const foodForceRender = useRef<() => void>(() => {});
+
   const Registered = useRef<boolean>(false);
 
   const { Socket } = useSocketService({
@@ -95,8 +100,12 @@ export default function FoodPage() {
 
       console.log("Response: ", response);
 
-      if (response?.scan && User?.ID) fetchMealTokens();
-      else if (response?.UserID) {
+      if (response?.scan && User?.ID) {
+        fetchMealTokens().then(() => {
+          forceUpdate();
+          foodForceRender.current();
+        });
+      } else if (response?.UserID) {
         console.log("User registered");
         Registered.current = true;
       }
@@ -106,7 +115,6 @@ export default function FoodPage() {
   if (!Registered.current) Socket.emit("register", User.ID);
 
   console.log(`Socket session in foodSection: ${Socket.id}`);
-
   if (MealTokens === undefined) fetchMealTokens();
 
   return (
@@ -120,11 +128,22 @@ export default function FoodPage() {
           {User?.ID !== undefined &&
           ActiveMeal != undefined &&
           MealTokens != undefined ? (
-            <Food
-              QRCode={User.ID}
-              mealToken={MealTokens?.length as number}
-              tokenType={ActiveMeal.toLowerCase()}
-            ></Food>
+            <div className="flex flex-col gap-2">
+              <Food
+                QRCode={User.ID}
+                mealToken={MealTokens?.length as number}
+                tokenType={ActiveMeal.toLowerCase()}
+                forceRender={foodForceRender}
+              ></Food>
+              {!User?.DietaryRestriction ? (
+                <></>
+              ) : (
+                <div className="flex items-center text-white self-center gap-2">
+                  <span className="font-bold">Dietary restriction:</span>
+                  <span>{User?.DietaryRestriction}</span>
+                </div>
+              )}
+            </div>
           ) : (
             <>{ActiveMeal == undefined ? "No active meals" : <>Loading</>}</>
           )}

@@ -25,9 +25,9 @@ export default function ScanQrCode({ Type }: { Type: number }) {
 
   const token = useAuthStore((state: any) => state.Token);
 
-  const createScan = async (id: string) => {
+  const createScan = async (id: string): Promise<any> => {
     const response = await (
-      await fetch(`https://${process.env.API_URL}/scan/create`, {
+      await fetch(`https://${process?.env.API_URL}/scan/create`, {
         method: "POST",
         mode: "cors",
         body: JSON.stringify({
@@ -42,8 +42,7 @@ export default function ScanQrCode({ Type }: { Type: number }) {
       })
     ).json();
 
-    // alert(`Code scanned: ${response.scan.user_id}: ${id}`);
-    // update();
+    return response;
   };
 
   const ConfirmationModal = ({ isOpen }: { isOpen: boolean }) => {
@@ -63,9 +62,12 @@ export default function ScanQrCode({ Type }: { Type: number }) {
                     </ModalBody>
                     <Button
                       onClick={async () => {
-                        createScan(scanId.current as string).then(() => {
-                          setIsOpen(false);
-                        });
+                        createScan(scanId.current as string).then(
+                          (response: any) => {
+                            setIsOpen(false);
+                            if (response?.error) alert(response?.error);
+                          },
+                        );
                       }}
                     >
                       Yes
@@ -76,7 +78,7 @@ export default function ScanQrCode({ Type }: { Type: number }) {
                         onClose();
                       }}
                     >
-                      Close
+                      No
                     </Button>
                   </>
                 )}
