@@ -57,7 +57,7 @@ export default function TimerPage() {
             <Header />
           </div>
 
-          <Schedule events={events} />
+          <Schedule />
         </div>
       ) : (
         <div className="w-screen h-screen flex  justify-center items-center gap-32">

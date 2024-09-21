@@ -23,7 +23,10 @@ export default function ScanQrCode({ Type }: { Type: number }) {
 
   const scanId = useRef<string>();
 
-  const token = useAuthStore((state: any) => state.Token);
+  const { user, token } = useAuthStore((state: any) => ({
+    user: state.User,
+    token: state.Token,
+  }));
 
   const createScan = async (id: string): Promise<any> => {
     const response = await (
@@ -58,7 +61,7 @@ export default function ScanQrCode({ Type }: { Type: number }) {
                       Confirm?
                     </ModalHeader>
                     <ModalBody>
-                      Confirm token scan for {scanId.current}?
+                      Confirm token scan for {user.FullName}?
                     </ModalBody>
                     <Button
                       onClick={async () => {

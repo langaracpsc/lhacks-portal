@@ -12,12 +12,12 @@ export default function PageToScan() {
 
   return (
     <>
-      <div className="w-screen h-screen flex flex-col items-center gap-32 overflow-x-hidden ">
-        <div className="w-screen   flex justify-end items-start  overflow-x-hidden ">
+      <div className="w-screen h-screen flex flex-col items-center gap-20 overflow-x-hidden ">
+        <div className="w-screen  flex justify-end items-start  overflow-x-hidden ">
           <Header />
         </div>
-        <div className="flex flex-col items-center justify-center gap-5">
-          <div className="flex flex-col items-center justify-center gap-5">
+        <div className="flex flex-col items-center justify-start gap-5">
+          <div className="flex flex-col items-center justify-start gap-5">
             <h1 className="text-white text-3xl">Execs Only</h1>
             <h1 className="text-orange-500 text-xl">Scan over the QR Code</h1>
           </div>
@@ -28,7 +28,7 @@ export default function PageToScan() {
                 { key: 1, label: "Food" },
               ]}
               label={"Select Scan Type"}
-              className={"w-screen"}
+              className={"w-[80vw]"}
               ref={scanType}
               onChange={(target: any) => {
                 setType(parseInt(target?.target?.value as string));
@@ -37,7 +37,7 @@ export default function PageToScan() {
               {(item) => <SelectItem key={item.key}>{item.label}</SelectItem>}
             </Select>
           </div>
-          <ScanQrCode Type={type as number} />
+          {type != undefined ? <ScanQrCode Type={type as number} /> : <></>}
         </div>
       </div>
     </>

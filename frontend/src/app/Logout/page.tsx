@@ -49,6 +49,8 @@ export default function Logout() {
       SetUser(null);
       CheckIn(false);
 
+      if (localStorage) localStorage.removeItem("authStore");
+
       router.push("/");
     });
   }, [User, Token]);

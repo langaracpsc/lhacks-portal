@@ -1,10 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import langaraCollege from "../../../assets/sponsors/langara_logo.jpg";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "../Store/AuthStore";
+import { Circles } from "react-loading-icons";
+
 import Microserve from "../../../public/MicroserveMicroUpdate.svg";
-import MLH from "../../../assets/sponsors/mlh_logo.png";
-import langaraCollegeTwo from "../../../assets/sponsors/langara_logo.jpg";
 import Samsung from "../../../public/SamsungSamsungUpdate.svg";
 import Defang from "../../../public/DefangDefangUpdateTwo.svg";
 import LangaraAP from "../../../public/VectorLangaraApplieScienceUpdate.svg";
@@ -13,9 +14,6 @@ import LangaraInfoTech from "../../../public/VectorLangaraITupdate.svg";
 import LangaraBio from "../../../public/VectorLangaraBio.svg";
 import LangaraProvostOffice from "../../../public/VectorLangaraProvost.svg";
 import LangaraMath from "../../../public/VectorMathLangaraUpadate2.svg";
-import { useRouter } from "next/navigation";
-import { useAuthStore } from "../Store/AuthStore";
-import { Circles } from "react-loading-icons";
 
 interface Sponsor {
   name: string;
@@ -62,7 +60,6 @@ const sponsorsData = {
       size: "w-48 h-48",
       row: 2,
     },
-
     {
       name: "Langara Bio Informatics",
       logo: LangaraBio,
@@ -84,7 +81,6 @@ const sponsorsData = {
       size: "w-48 h-48",
       row: 3,
     },
-
     {
       name: "Langara Provost Office",
       logo: LangaraProvostOffice,
@@ -127,12 +123,12 @@ const SponsorDisplay: React.FC = () => {
     return Object.keys(rows).map((row) => (
       <div
         key={row}
-        className="flex flex-wrap justify-center items-center gap-10 max-[690px]:w-6/12 "
+        className="flex flex-wrap justify-center items-center gap-10 w-full"
       >
         {rows[parseInt(row)].map((sponsor) => (
           <div
             key={sponsor.name}
-            className={` flex  justify-center items-center "w-[200px] h-[200px]`}
+            className="flex justify-center items-center w-[200px] h-[200px]"
           >
             <Image
               onClick={() => {
@@ -140,7 +136,7 @@ const SponsorDisplay: React.FC = () => {
               }}
               src={sponsor.logo}
               alt={`${sponsor.name} logo`}
-              className={`w-max h-max fill-white  `}
+              className="w-max h-max fill-white cursor-pointer"
               height={sponsor.name == "Defang" ? 400 : 200}
               width={sponsor.name == "Defang" ? 400 : 200}
             />
@@ -153,16 +149,20 @@ const SponsorDisplay: React.FC = () => {
   return (
     <>
       {checkedIn.current ? (
-        <div className="w-screen h-full flex flex-col items-center gap-32 bg-black ">
-          <div className="flex flex-col w-11/12  gap-10 justify-center items-center ">
-            <h2 className="text-2xl font-bold mb-4 text-center text-white">
-              Sponsors
-            </h2>
-            {renderSponsors(sponsorsData.current)}
+        <div className="w-full h-screen flex flex-col bg-black">
+          <h2 className="text-2xl font-bold p-4 text-center text-white">
+            Sponsors
+          </h2>
+          <div className="flex-grow overflow-y-auto">
+            <div className="w-full max-w-4xl mx-auto px-4">
+              <div className="flex flex-col gap-10 items-center pb-8">
+                {renderSponsors(sponsorsData.current)}
+              </div>
+            </div>
           </div>
         </div>
       ) : (
-        <div className="w-screen h-screen flex  justify-center items-center gap-32">
+        <div className="w-full h-screen flex justify-center items-center">
           <Circles />
         </div>
       )}
