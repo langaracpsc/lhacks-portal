@@ -140,7 +140,7 @@ export default function Header() {
               </button>
             </div>
             <div
-              className={`border-b-2 hover:border-orange-500 [&>*]:hover:text-orange-500 ${User.Role == 1 ? "visible" : "hidden"}`}
+              className={`border-b-2 hover:border-orange-500 [&>*]:hover:text-orange-500`}
             >
               <button
                 onClick={() => {
@@ -154,10 +154,21 @@ export default function Header() {
             </div>
           </div>
         ) : (
-          <div className=" flex justify-center items-center">
+          <div className=" flex flex-col justify-center items-center gap-5">
             <h1 className=" text-white text-xl">
               Check in to access this section
             </h1>
+
+            <button
+              onClick={() => {
+                setIsOpen(false);
+
+                router.push("/Logout");
+              }}
+              className="font-bold text-3xl px-6 py-2 bg-none hover:text-orange-500 text-white rounded"
+            >
+              Logout
+            </button>
           </div>
         )}
       </div>

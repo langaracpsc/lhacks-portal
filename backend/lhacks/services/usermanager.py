@@ -63,33 +63,32 @@ class UserManager:
             self.DB.rollback()
             raise
         return user
-    
+
     def GetUserInfo(self, user_id: str) -> dict:
         user = self.DB.query(User).filter_by(ID=user_id).first()
         if not user:
             return {"error": "User not found"}
-        
-        return user
-    
+
+        return user.ToDict()
+
     def SyncUserWithApplication(self, email: str) -> User:
         application: Application = self.ApplicationManager.GetApplicationByEmail(email)
 
         if (not application):
             return {"error": "Application not found"}
 
-        user: User = None 
+        user: User = None
 
         try:
             update(User).where(User.Email == email).values(
-                PreferredName=application.PreferredName, 
-                DietaryRestriction=application.DietaryRestriction, 
+                PreferredName=application.PreferredName,
+                DietaryRestriction=application.DietaryRestriction,
                 Allergies=application.Allergies
             )
 
             user = self.GetUserByEmail(email).ToDict()
 
-        except Exception as e: 
+        except Exception as e:
             return {"error": e.args[1]}
-        
-        return user
 
+        return user

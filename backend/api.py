@@ -26,6 +26,7 @@ logging.basicConfig()
 logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
 
 CORS(app, resources={r"/socket.io/*": {"origins": "*"}})
+
 app.secret_key = env.get("APP_SECRET_KEY")
 oauth.oauth = OAuth(app)
 oauth.oauth.register(
@@ -43,11 +44,9 @@ app.register_blueprint(user_bp, url_prefix="/user")
 app.register_blueprint(scan_bp, url_prefix="/scan")
 app.register_blueprint(meal_bp, url_prefix="/meal")
 
-
 @socket.socketio.on("connect")
 def connected():
     print("Client connected")
-
 
 @socket.socketio.on("disconnect")
 def disconnected():

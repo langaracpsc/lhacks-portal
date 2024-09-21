@@ -13,4 +13,14 @@ async function fetchCheckinInfo(
   ).json()) as CheckInInfo;
 }
 
-export { fetchCheckinInfo };
+async function fetchUserInfo(userID: string, token: string): Promise<User> {
+  return (await (
+    await fetch(`https://${process.env.API_URL}/user/info/${userID}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+  ).json()) as User;
+}
+
+export { fetchCheckinInfo, fetchUserInfo };

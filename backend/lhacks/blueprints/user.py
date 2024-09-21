@@ -18,9 +18,10 @@ Manager = UserManager(dbSession)
 
 scanManager = ScanManager(dbSession)
 
-@user_bp.route("/", methods=["GET"])
-@require_auth(None)
-def get_user_info():
+@validate_jwt(HandleLookup)
+@user_bp.route("/info/<string:user_id>", methods=["GET"])
+@cross_origin()
+def get_user_info(user_id: str):
     token = get_token_auth_header()
     if isinstance(token, dict):
         return token  # Token is already an error response
@@ -28,10 +29,8 @@ def get_user_info():
     payload = verify_jwt(token)
     if isinstance(payload, dict) and 'error' in payload:
         return payload  # Payload is an error response
-
-    user_id = payload.get('sub')
-
     user_info = Manager.GetUserInfo(user_id)
+
     if "error" in user_info:
         return jsonify(user_info), 404
 

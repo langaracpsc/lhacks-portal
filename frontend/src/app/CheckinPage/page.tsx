@@ -11,6 +11,7 @@ export default function CheckInPage() {
     User: state.User,
     Token: state.Token,
   }));
+
   const Registered = useRef<boolean>(false);
   const CheckIn = useAuthStore((state: any) => state.CheckIn);
   const [, forceUpdate] = useReducer((x) => x + 1, 0);

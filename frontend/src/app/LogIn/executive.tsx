@@ -1,18 +1,17 @@
 // page for qrCode scan by executives
 
 import { Scanner } from "@yudiel/react-qr-scanner";
-import { useAuthStore } from "../Store/AuthStore";
+import { useAuthStore, User } from "../Store/AuthStore";
 import React, { useEffect, useReducer, useRef, useState } from "react";
-
 import {
   Modal,
   ModalContent,
   ModalHeader,
   ModalBody,
-  ModalFooter,
   useDisclosure,
 } from "@nextui-org/modal";
 import { Button } from "@nextui-org/button";
+import { fetchUserInfo } from "../user/service";
 
 export default function ScanQrCode({ Type }: { Type: number }) {
   const [, update] = useReducer((x) => x + 1, 0);
@@ -23,10 +22,11 @@ export default function ScanQrCode({ Type }: { Type: number }) {
 
   const scanId = useRef<string>();
 
-  const { user, token } = useAuthStore((state: any) => ({
-    user: state.User,
+  const { token } = useAuthStore((state: any) => ({
     token: state.Token,
   }));
+
+  const [user, setUser] = useState<User>();
 
   const createScan = async (id: string): Promise<any> => {
     const response = await (
@@ -61,14 +61,21 @@ export default function ScanQrCode({ Type }: { Type: number }) {
                       Confirm?
                     </ModalHeader>
                     <ModalBody>
-                      Confirm token scan for {user.FullName}?
+                      Confirm token scan for {user?.FullName}?
                     </ModalBody>
                     <Button
                       onClick={async () => {
                         createScan(scanId.current as string).then(
                           (response: any) => {
                             setIsOpen(false);
-                            if (response?.error) alert(response?.error);
+                            if (
+                              response?.error &&
+                              response?.error?.toLowerCase().search("emit") < 0
+                            ) {
+                              alert(response?.error);
+                            } else {
+                              alert(`Scan created for ${user?.FullName}`);
+                            }
                           },
                         );
                       }}
@@ -102,7 +109,11 @@ export default function ScanQrCode({ Type }: { Type: number }) {
         onScan={(result) => {
           if (result.length > 0) {
             scanId.current = result[0].rawValue;
-            setIsOpen(true);
+
+            fetchUserInfo(scanId.current, token).then((response: User) => {
+              setUser(response);
+              setIsOpen(true);
+            });
           }
         }}
       />
