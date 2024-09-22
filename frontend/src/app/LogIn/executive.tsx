@@ -12,6 +12,7 @@ import {
 } from "@nextui-org/modal";
 import { Button } from "@nextui-org/button";
 import { fetchUserInfo } from "../user/service";
+import { useRouter } from "next/navigation";
 
 export default function ScanQrCode({ Type }: { Type: number }) {
   const [, update] = useReducer((x) => x + 1, 0);
@@ -27,6 +28,8 @@ export default function ScanQrCode({ Type }: { Type: number }) {
   }));
 
   const [user, setUser] = useState<User>();
+
+  const router = useRouter();
 
   const createScan = async (id: string): Promise<any> => {
     const response = await (
@@ -68,6 +71,15 @@ export default function ScanQrCode({ Type }: { Type: number }) {
                         createScan(scanId.current as string).then(
                           (response: any) => {
                             setIsOpen(false);
+                            if (
+                              response?.error &&
+                              response?.error
+                                .toLowerCase()
+                                .search("invalid token") >= 0
+                            ) {
+                              router.push("/Logout");
+                            }
+
                             if (
                               response?.error &&
                               response?.error?.toLowerCase().search("emit") < 0
