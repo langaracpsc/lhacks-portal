@@ -9,7 +9,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
-COPY .env .env
+# COPY .env .env
 
 ENV FLASK_APP=api.py
 ENV FLASK_ENV=development
